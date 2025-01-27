@@ -32,8 +32,14 @@ export default function Random() {
       </div>
 
       {/* Movie cards section */}
+
+      {/* Trending Section */}
       <Trending />
+
+      {/* Popular Section */}
       <Popular />
+
+      {/* Genre Section */}
       <SearchResult />
     </>
   );
