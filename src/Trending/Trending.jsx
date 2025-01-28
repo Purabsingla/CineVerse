@@ -1,10 +1,9 @@
-import { pointer } from "@testing-library/user-event/dist/cjs/pointer/index.js";
-import { useState } from "react";
-export default function Trending() {
+import { forwardRef, useState } from "react";
+const Trending = forwardRef((props, ref) => {
   // Total number of items
 
   return (
-    <div className="pt-8  bg-deep-space-2 bg-opacity-80">
+    <div className="pt-8  bg-deep-space bg-opacity-80 transition-all" ref={ref}>
       {/* Heading Section */}
       <div className="py-8">
         <div
@@ -25,7 +24,9 @@ export default function Trending() {
       </div>
     </div>
   );
-}
+});
+
+export default Trending;
 
 const Card = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -132,6 +133,7 @@ const Card = () => {
   ];
   const PendingSlides = Data.length - 5;
   const [disable, setDisable] = useState(false);
+  const [prevDisable, setPrevDisable] = useState(true);
 
   const handleNext = () => {
     console.log(PendingSlides);
@@ -148,11 +150,20 @@ const Card = () => {
         setDisable(true);
       }
     }
+    setPrevDisable(false);
   };
 
   const handlePrev = () => {
     if (currentSlide > 0) {
       setCurrentSlide((prev) => prev - 1);
+      if (currentSlide - 1 === 0) {
+        console.log("Time to TRUEEE");
+        console.log(currentSlide);
+        setPrevDisable(true);
+      } else {
+        console.log("Time to false");
+        setPrevDisable(false);
+      }
     }
     setDisable(false);
   };
@@ -161,7 +172,9 @@ const Card = () => {
     <div className="relative">
       {/* Left Arrow */}
       <button
-        className="absolute top-1/2 left-0 transform -translate-y-1/2 bg-black bg-opacity-50 p-2 rounded-full text-white z-20"
+        className={`absolute top-1/2 left-3 transform -translate-y-1/2 bg-[#001f3f] opacity-70 transition-opacity hover:opacity-100 p-4 w-16 h-16 rounded-full text-white z-20 ${
+          prevDisable ? "cursor-not-allowed" : "cursor-pointer"
+        }`}
         onClick={handlePrev}
         disabled={currentSlide === 0}
       >
@@ -207,7 +220,7 @@ const Card = () => {
 
       {/* Right Arrow */}
       <button
-        className={`absolute top-1/2 right-0 transform -translate-y-1/2 bg-black bg-opacity-70 w-16 h-16  rounded-full text-white z-10 ${
+        className={`absolute top-1/2 right-3 transform -translate-y-1/2 bg-black opacity-70 transition-opacity hover:opacity-100 w-16 h-16  rounded-full text-white z-10 ${
           disable ? "cursor-not-allowed" : "cursor-pointer"
         }`}
         onClick={handleNext}
