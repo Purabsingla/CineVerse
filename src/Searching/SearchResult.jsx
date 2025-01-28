@@ -13,7 +13,7 @@ export default function SearchResult() {
             }}
           >
             <h1 className="text-3xl font-bold text-white drop-shadow-lg">
-              Searched Result
+              Movies By Genre
             </h1>
           </div>
         </div>

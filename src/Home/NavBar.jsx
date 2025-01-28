@@ -1,27 +1,44 @@
 import { useState } from "react";
 import { GiAlienEgg } from "react-icons/gi";
+import { useNavigate } from "react-router-dom";
 const NavBar = ({ inputRef, sectionRef, trendingRef, popularRef }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
+  const [search, setSearch] = useState("");
+  const navigate = useNavigate();
   const toggleMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
   const handleScrollToTrending = () => {
-    if (trendingRef.current) {
-      trendingRef.current.scrollIntoView({ behavior: "smooth" });
+    if (trendingRef) {
+      if (trendingRef.current) {
+        trendingRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    } else {
+      navigate("/#trending-section");
     }
   };
 
   const handleScrollToHome = () => {
-    if (sectionRef.current) {
-      sectionRef.current.scrollIntoView({ behavior: "smooth" });
-    }
+    if (sectionRef) {
+      if (sectionRef.current) {
+        sectionRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    } else navigate("/");
   };
 
   const handleScrollToPopular = () => {
-    if (popularRef.current) {
-      popularRef.current.scrollIntoView({ behavior: "smooth" });
+    if (popularRef) {
+      if (popularRef.current) {
+        popularRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    } else navigate("/#popular-section");
+  };
+
+  const handleSearch = () => {
+    if (search.trim()) {
+      const formattedSearch = search.toLowerCase().replace(/\s+/g, "-"); // Format for URL
+      navigate(`/search/${formattedSearch}`);
     }
   };
 
@@ -42,6 +59,9 @@ const NavBar = ({ inputRef, sectionRef, trendingRef, popularRef }) => {
               id="search-desktop"
               className="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 placeholder-gray-500 transition-colors focus:ring-[#39ff14] focus:border-[#39ff14] focus:placeholder-[#39ff14] focus:text-[#39ff14] dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-[#39ff14] dark:focus:border-[#39ff14]"
               placeholder="Search..."
+              onChange={(e) => {
+                setSearch(e.target.value);
+              }}
             />
             <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
               <svg
@@ -58,6 +78,13 @@ const NavBar = ({ inputRef, sectionRef, trendingRef, popularRef }) => {
               </svg>
             </div>
           </div>
+
+          <button
+            className=" ml-1  p-2 text-base font-medium bg-[#39ff14] text-white rounded-lg transition-colors hover:bg-[#32cc13]"
+            onClick={handleSearch}
+          >
+            Search
+          </button>
 
           {/* Hamburger Button for Mobile */}
           <button

@@ -3,12 +3,29 @@ import SearchResult from "../Searching/SearchResult";
 import Trending from "../Trending/Trending";
 import Popular from "../Popular/Popular";
 import NavBar from "./NavBar";
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import Footer from "../Footer/footer";
+import { useLocation } from "react-router-dom";
+
 export default function Random() {
   const inputRef = useRef(null);
   const sectionRef = useRef(null); // Ref for the background section
   const trendingRef = useRef(null); // Ref for Trending
   const popularRef = useRef(null); // Ref for Popular
+
+  const location = useLocation(); // Extract the location here
+
+  // Extract hash from location for dependency
+  const hash = location.hash;
+
+  const handleScrollToHome = () => {
+    if (sectionRef) {
+      if (sectionRef.current) {
+        sectionRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
+
   const handleScrollToTrending = () => {
     if (trendingRef.current) {
       trendingRef.current.scrollIntoView({ behavior: "smooth" });
@@ -21,8 +38,61 @@ export default function Random() {
     }
   };
 
+  //After Refreshing helps scrool to rop
+  useEffect(() => {
+    // Remove the hash on page load to prevent auto-scroll
+    if (hash) {
+      window.history.replaceState(null, "", window.location.pathname);
+      handleScrollToHome();
+    }
+
+    // Ensure the page starts at the top
+    handleScrollToHome();
+  }, [hash]); // Empty dependency array to run only once on mount
+
+  //After Click trending scroll to trending
+  useEffect(() => {
+    if (trendingRef.current && hash === "#trending-section") {
+      trendingRef.current.scrollIntoView({ behavior: "smooth" });
+      const timer = setTimeout(() => {
+        window.history.replaceState(null, "", window.location.pathname);
+      }, 10); // Set a delay based on your scroll duration (in ms)
+
+      // Clean up the timer if the component unmounts
+      return () => clearTimeout(timer);
+    } else if (popularRef.current && hash === "#popular-section") {
+      popularRef.current.scrollIntoView({ behavior: "smooth" });
+      const timer = setTimeout(() => {
+        window.history.replaceState(null, "", window.location.pathname);
+      }, 10); // Set a delay based on your scroll duration (in ms)
+
+      // Clean up the timer if the component unmounts
+      return () => clearTimeout(timer);
+    }
+  }, [hash]);
+
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    const handlePageLoad = () => {
+      setIsLoaded(true); // Trigger animation after page load
+    };
+
+    if (document.readyState === "complete") {
+      handlePageLoad();
+    } else {
+      window.addEventListener("load", handlePageLoad);
+    }
+
+    return () => window.removeEventListener("load", handlePageLoad);
+  }, []);
+
   return (
-    <React.Fragment>
+    <div
+      className={`transition-opacity duration-500 ${
+        !isLoaded ? "opacity-0 pointer-events-none" : "opacity-100"
+      }`}
+    >
       <NavBar
         inputRef={inputRef}
         popularRef={popularRef}
@@ -71,6 +141,7 @@ export default function Random() {
 
       {/* Genre Section */}
       <SearchResult />
-    </React.Fragment>
+      <Footer />
+    </div>
   );
 }

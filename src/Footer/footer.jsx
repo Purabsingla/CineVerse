@@ -207,7 +207,7 @@ const Footer = () => {
                 Movie Finder by
                 <span className="text-blueGray-500 hover:text-blueGray-800">
                   {" "}
-                  Purab Singla
+                  Purab Singla | Powered by TMDB
                 </span>
                 .
               </span>
