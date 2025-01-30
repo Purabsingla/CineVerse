@@ -87,6 +87,10 @@ export default function Random() {
     return () => window.removeEventListener("load", handlePageLoad);
   }, []);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div
       className={`transition-opacity duration-500 ${

@@ -1,6 +1,33 @@
-import { forwardRef, useState } from "react";
+import { forwardRef, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Popular = forwardRef((props, ref) => {
+  const API_KEY = "2b42109ec723deefd4b119269974252b";
+
+  const url = `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}`;
+
+  const [data, setData] = useState(null);
+  const navigate = useNavigate();
+  useEffect(() => {
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data.results);
+        setData(data.results);
+      })
+      .catch((err) => console.log(err));
+  }, [url]);
+
+  const HandleNavigate = (Data) => {
+    console.log("Woorking", Data.id);
+    if (Data.title && Data.id) {
+      if (Data.title.trim()) {
+        const query = Data.title.toLowerCase().replace(/\s+/g, "-");
+        navigate(`/movie/${query}/${Data.id}`);
+      }
+    }
+  };
+
   return (
     <div
       className="pt-8 pb-16 bg-deep-space-2 bg-opacity-80 transition-all"
@@ -22,7 +49,7 @@ const Popular = forwardRef((props, ref) => {
 
       {/* Carousel Section */}
       <div className="px-4 md:px-8 lg:px-12 ">
-        <Card />
+        <Card MetaData={data} HandleNavigate={HandleNavigate} />
       </div>
     </div>
   );
@@ -30,110 +57,10 @@ const Popular = forwardRef((props, ref) => {
 
 export default Popular;
 
-const Card = () => {
+const Card = ({ MetaData, HandleNavigate }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const slidesToShow = 4; // Number of slides visible at a time
-  const Data = [
-    {
-      id: 1,
-      title: "Movie 1",
-      description: "This is the description for Movie 1.",
-      image: "https://via.placeholder.com/150",
-      releaseDate: "2025-01-01",
-    },
-    {
-      id: 2,
-      title: "Movie 2",
-      description: "This is the description for Movie 2.",
-      image: "https://via.placeholder.com/150",
-      releaseDate: "2025-01-02",
-    },
-    {
-      id: 3,
-      title: "Movie 3",
-      description: "This is the description for Movie 3.",
-      image: "https://via.placeholder.com/150",
-      releaseDate: "2025-01-03",
-    },
-    {
-      id: 4,
-      title: "Movie 4",
-      description: "This is the description for Movie 4.",
-      image: "https://via.placeholder.com/150",
-      releaseDate: "2025-01-04",
-    },
-    {
-      id: 5,
-      title: "Movie 5",
-      description: "This is the description for Movie 5.",
-      image: "https://via.placeholder.com/150",
-      releaseDate: "2025-01-05",
-    },
-    {
-      id: 6,
-      title: "Movie 6",
-      description: "This is the description for Movie 6.",
-      image: "https://via.placeholder.com/150",
-      releaseDate: "2025-01-06",
-    },
-    {
-      id: 7,
-      title: "Movie 7",
-      description: "This is the description for Movie 7.",
-      image: "https://via.placeholder.com/150",
-      releaseDate: "2025-01-07",
-    },
-    {
-      id: 8,
-      title: "Movie 8",
-      description: "This is the description for Movie 8.",
-      image: "https://via.placeholder.com/150",
-      releaseDate: "2025-01-08",
-    },
-    {
-      id: 9,
-      title: "Movie 9",
-      description: "This is the description for Movie 9.",
-      image: "https://via.placeholder.com/150",
-      releaseDate: "2025-01-09",
-    },
-    {
-      id: 10,
-      title: "Movie 10",
-      description: "This is the description for Movie 10.",
-      image: "https://via.placeholder.com/150",
-      releaseDate: "2025-01-10",
-    },
-    {
-      id: 11,
-      title: "Movie 11",
-      description: "This is the description for Movie 11.",
-      image: "https://via.placeholder.com/150",
-      releaseDate: "2025-01-11",
-    },
-    {
-      id: 12,
-      title: "Movie 12",
-      description: "This is the description for Movie 12.",
-      image: "https://via.placeholder.com/150",
-      releaseDate: "2025-01-12",
-    },
-    {
-      id: 13,
-      title: "Movie 13",
-      description: "This is the description for Movie 13.",
-      image: "https://via.placeholder.com/150",
-      releaseDate: "2025-01-13",
-    },
-    {
-      id: 14,
-      title: "Movie 14",
-      description: "This is the description for Movie 14.",
-      image: "https://via.placeholder.com/150",
-      releaseDate: "2025-01-14",
-    },
-  ];
-  const PendingSlides = Data.length - 5;
+  const PendingSlides = MetaData && MetaData.length - 5;
   const [disable, setDisable] = useState(false);
   const [prevDisable, setPrevDisable] = useState(true);
 
@@ -190,33 +117,34 @@ const Card = () => {
           // style={{ transform: `translateX(-${currentSlide * 100}%)` }}
           style={{ transform: `translateX(-${currentSlide * 20}%)` }}
         >
-          {Data.map((item) => (
-            <div
-              key={item.id}
-              className="text-white  overflow-hidden shadow-lg hover:shadow-[0_10px_30px_rgba(0,255,0,0.6)] hover:scale-105 transition-transform duration-300 ease-in-out w-0 h-300px relative flex-shrink-0 mr-[1.95rem] ml-[3.2rem] my-[5rem]"
-              style={{ flex: `0 0 calc(100% / ${slidesToShow + 3.1})` }}
-            >
-              {/* Gradient Overlay for Entire Card */}
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black opacity-80"></div>
+          {MetaData &&
+            MetaData.map((item) => (
+              <div
+                key={item.id}
+                className="text-white  overflow-hidden shadow-lg hover:shadow-[0_10px_30px_rgba(0,255,0,0.6)] hover:scale-105 transition-transform duration-300 ease-in-out w-0 h-300px relative flex-shrink-0 mr-[1.95rem] ml-[3.2rem] my-[5rem]"
+                style={{ flex: `0 0 calc(100% / ${slidesToShow + 3.1})` }}
+                onClick={() => {
+                  HandleNavigate(item);
+                }}
+              >
+                {/* Gradient Overlay for Entire Card */}
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black opacity-80"></div>
 
-              {/* Movie Image */}
-              <img
-                src={`https://moviesmod.cash/wp-content/uploads/2025/01/Sonic-the-Hedgehog-3-2024-MoviesMod.red_.jpg`}
-                alt={item.title}
-                className="object-cover"
-              />
+                {/* Movie Image */}
+                <img
+                  src={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
+                  alt={item.title}
+                  className="object-cover"
+                />
 
-              {/* Text Content */}
-              <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black to-transparent">
-                <h3 className="text-lg font-bold mb-2 text-white drop-shadow-md">
-                  {item.title}
-                </h3>
-                <p className="text-sm text-gray-300 drop-shadow-sm">
-                  {item.description}
-                </p>
+                {/* Text Content */}
+                <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black to-transparent">
+                  <h3 className="text-lg font-bold mb-2 text-white drop-shadow-md">
+                    {item.title}
+                  </h3>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
 
