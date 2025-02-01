@@ -6,12 +6,15 @@ import NavBar from "./NavBar";
 import React, { useEffect, useRef, useState } from "react";
 import Footer from "../Footer/footer";
 import { useLocation } from "react-router-dom";
+import TrendingShows from "../Trending/TrendingShows";
+import PopularShows from "../Popular/PopularShows";
 
 export default function Random() {
   const inputRef = useRef(null);
   const sectionRef = useRef(null); // Ref for the background section
   const trendingRef = useRef(null); // Ref for Trending
   const popularRef = useRef(null); // Ref for Popular
+  const genreRef = useRef(null); // Ref for Popular
 
   const location = useLocation(); // Extract the location here
 
@@ -52,23 +55,31 @@ export default function Random() {
 
   //After Click trending scroll to trending
   useEffect(() => {
-    if (trendingRef.current && hash === "#trending-section") {
-      trendingRef.current.scrollIntoView({ behavior: "smooth" });
+    requestAnimationFrame(() => {
+      if (trendingRef.current && hash === "#trending-section") {
+        trendingRef.current.scrollIntoView({ behavior: "smooth" });
+      } else {
+        setTimeout(() => {
+          if (hash === "#popular-section" && popularRef.current) {
+            popularRef.current.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          } else if (hash === "#genre-section" && genreRef.current) {
+            genreRef.current.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }
+        }, 100); // Delay ensures DOM is updated before scrolling
+      }
       const timer = setTimeout(() => {
         window.history.replaceState(null, "", window.location.pathname);
-      }, 10); // Set a delay based on your scroll duration (in ms)
+      }, 1000); // Set a delay based on your scroll duration (in ms)
 
       // Clean up the timer if the component unmounts
       return () => clearTimeout(timer);
-    } else if (popularRef.current && hash === "#popular-section") {
-      popularRef.current.scrollIntoView({ behavior: "smooth" });
-      const timer = setTimeout(() => {
-        window.history.replaceState(null, "", window.location.pathname);
-      }, 10); // Set a delay based on your scroll duration (in ms)
-
-      // Clean up the timer if the component unmounts
-      return () => clearTimeout(timer);
-    }
+    });
   }, [hash]);
 
   const [isLoaded, setIsLoaded] = useState(false);
@@ -102,6 +113,7 @@ export default function Random() {
         popularRef={popularRef}
         trendingRef={trendingRef}
         sectionRef={sectionRef}
+        genreRef={genreRef}
       />
       <div
         className="relative h-screen bg-cover bg-center"
@@ -139,12 +151,14 @@ export default function Random() {
 
       {/* Trending Section */}
       <Trending ref={trendingRef} />
+      <TrendingShows />
 
       {/* Popular Section */}
       <Popular ref={popularRef} />
+      <PopularShows />
 
       {/* Genre Section */}
-      <SearchResult />
+      <SearchResult ref={genreRef} />
       <Footer />
     </div>
   );

@@ -70,13 +70,16 @@ const Details = ({ type }) => {
             data.results.find(
               (vid) =>
                 vid.site === "YouTube" &&
-                (vid.type === "Trailer" || vid.type === "Opening Credits")
+                (vid.type === "Trailer" ||
+                  vid.type === "Opening Credits" ||
+                  vid.type === "Teaser")
             );
           console.log(trailer, " is trailer of show");
-          trailer &&
-            setYoutubeData(
-              trailer.length > 0 ? trailer[trailer.length].key : trailer.key
-            );
+          trailer
+            ? setYoutubeData(
+                trailer.length > 0 ? trailer[trailer.length].key : trailer.key
+              )
+            : setYoutubeData(null);
         })
         .catch((error) => console.error("Error fetching movie:", error));
 
@@ -90,7 +93,7 @@ const Details = ({ type }) => {
           )
         );
     }
-  }, [id, query]);
+  }, [id, type, query]);
 
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -111,10 +114,17 @@ const Details = ({ type }) => {
 
   const HandleClick = (Dataa) => {
     if (Dataa) {
-      const formattedQuery = Dataa.title
-        .replace(/-/g, " ")
-        .replace(/\b\w/g, (char) => char.toUpperCase());
-      navigate(`/movie/${formattedQuery}/${Dataa.id}`);
+      if (Dataa.title) {
+        const formattedQuery = Dataa.title
+          .replace(/-/g, " ")
+          .replace(/\b\w/g, (char) => char.toUpperCase());
+        navigate(`/movie/${formattedQuery}/${Dataa.id}`);
+      } else if (Dataa.name) {
+        const formattedQuery = Dataa.name
+          .replace(/-/g, " ")
+          .replace(/\b\w/g, (char) => char.toUpperCase());
+        navigate(`/tv/${formattedQuery}/${Dataa.id}`);
+      }
     }
   };
 
@@ -186,7 +196,13 @@ const Details = ({ type }) => {
             </div>
             <div className="bg-gray-800 p-4 rounded-lg shadow-md">
               <p className="font-bold">Runtime</p>
-              <p>{data && (data.runtime || data.episode_run_time[0])} mins</p>
+              <p>
+                {data &&
+                  (data.runtime > 0
+                    ? data.runtime
+                    : data.episode_run_time?.[0] || "Not available")}{" "}
+                mins
+              </p>
             </div>
             <div className="bg-gray-800 p-4 rounded-lg shadow-md">
               <p className="font-bold">Rating</p>
@@ -195,22 +211,27 @@ const Details = ({ type }) => {
           </div>
 
           {/* Production Companies */}
-          <h2 className="text-5xl font-bold mb-10 mt-10">
-            Production Companies
-          </h2>
-          <div className="flex flex-wrap gap-10">
-            {data &&
-              data.production_companies.map((company) => (
-                <div key={company.name} className="text-center border-b">
-                  <img
-                    src={`https://image.tmdb.org/t/p/w500${company.logo_path}`}
-                    alt={company.name}
-                    className="h-20 mx-auto bg-white rounded-md p-2"
-                  />
-                  <p className="mt-2">{company.name}</p>
-                </div>
-              ))}
-          </div>
+          {data?.production_companies?.length > 0 && (
+            <>
+              <h2 className="text-5xl font-bold mb-10 mt-10">
+                Production Companies
+              </h2>
+              <div className="flex flex-wrap gap-10">
+                {data.production_companies.map((company) => (
+                  <div key={company.name} className="text-center border-b">
+                    {company.logo_path && (
+                      <img
+                        src={`https://image.tmdb.org/t/p/w500${company.logo_path}`}
+                        alt={company.name}
+                        className="h-20 mx-auto bg-white rounded-md p-2"
+                      />
+                    )}
+                    <p className="mt-2">{company.name}</p>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
 
           {/* Available on OTT */}
           {ottLinks && (
@@ -218,7 +239,7 @@ const Details = ({ type }) => {
               <h2 className="text-5xl font-bold mb-6">Available on</h2>
               <div className="flex flex-wrap gap-6">
                 {/* Loop through buy, flatrate, and rent */}
-                {["buy", "flatrate", "rent"].map(
+                {/* {["buy", "flatrate", "rent"].map(
                   (type) =>
                     ottLinks[type] &&
                     ottLinks[type].map((provider) => (
@@ -246,13 +267,52 @@ const Details = ({ type }) => {
                         </p>
                       </div>
                     ))
+                )} */}
+                {["buy", "flatrate", "rent"].some(
+                  (type) => ottLinks[type]?.length
+                ) ? (
+                  ["buy", "flatrate", "rent"].map(
+                    (type) =>
+                      ottLinks[type] &&
+                      ottLinks[type].map((provider) => (
+                        <div
+                          key={provider.provider_id}
+                          className="text-center bg-gray-800 p-4 rounded-lg shadow-md"
+                        >
+                          {provider.logo_path && (
+                            <a
+                              href={ottLinks.link} // Global link for the OTT platform
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="block"
+                            >
+                              <img
+                                src={`https://image.tmdb.org/t/p/w200${provider.logo_path}`}
+                                alt={provider.provider_name}
+                                className="h-16 mx-auto"
+                              />
+                            </a>
+                          )}
+                          <p className="mt-2">{provider.provider_name}</p>
+                          <p className="text-gray-400 text-sm capitalize">
+                            ({type})
+                          </p>
+                        </div>
+                      ))
+                  )
+                ) : (
+                  <p className="text-center  mt-4">
+                    Not available in your country.
+                  </p>
                 )}
               </div>
             </div>
           )}
 
           {/* SImilar Movies */}
-          <h2 className="text-5xl font-bold mt-10 mb-6">Similar Movies</h2>
+          <h2 className="text-5xl font-bold mt-10 mb-6">
+            Similar {type === "movie" ? "Movies" : "TV Shows"}
+          </h2>
           <div className="flex flex-wrap justify-center ">
             {similarMovies &&
               similarMovies.map((item) => (

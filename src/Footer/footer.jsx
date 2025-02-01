@@ -127,7 +127,7 @@ const Footer = () => {
                 rel="noopener noreferrer"
               >
                 {" "}
-                Movie Finder by
+                CineVerse by
                 <span className="text-blueGray-500 hover:text-blueGray-800">
                   {" "}
                   Purab Singla | Powered by TMDB

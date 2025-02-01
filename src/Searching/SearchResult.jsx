@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function SearchResult() {
+const SearchResult = forwardRef((props, ref) => {
   const API_KEY = String(process.env.REACT_APP_API_KEY).trim();
   const [genre, setGenre] = useState(null);
   const [genreValue, setGenreValue] = useState("1");
@@ -61,7 +61,7 @@ export default function SearchResult() {
 
   return (
     <>
-      <div className="pt-8 pb-16 bg-deep-space bg-opacity-80">
+      <div className="pt-8 pb-16 bg-deep-space bg-opacity-80" ref={ref}>
         {/* Heading Section */}
         <div className="py-8">
           <div
@@ -105,7 +105,10 @@ export default function SearchResult() {
       </div>
     </>
   );
-}
+});
+
+export default SearchResult;
+
 const Card = ({ MetaData, reset, setReset }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const slidesToShow = 4; // Number of slides visible at a time

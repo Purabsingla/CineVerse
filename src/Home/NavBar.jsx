@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { GiAlienEgg } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
-const NavBar = ({ inputRef, sectionRef, trendingRef, popularRef }) => {
+const NavBar = ({ sectionRef, trendingRef, popularRef, genreRef }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
@@ -16,6 +16,16 @@ const NavBar = ({ inputRef, sectionRef, trendingRef, popularRef }) => {
       }
     } else {
       navigate("/#trending-section");
+    }
+  };
+
+  const handleScrollTogenre = () => {
+    if (genreRef) {
+      if (genreRef.current) {
+        genreRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    } else {
+      navigate("/#genre-section");
     }
   };
 
@@ -48,7 +58,7 @@ const NavBar = ({ inputRef, sectionRef, trendingRef, popularRef }) => {
         <p className="flex items-center space-x-3 rtl:space-x-reverse cursor-default">
           <GiAlienEgg className="h-8 w-8 text-white" />
           <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
-            Movie Finder
+            CineVerse
           </span>
         </p>
         <div className="flex items-center md:order-2">
@@ -162,7 +172,7 @@ const NavBar = ({ inputRef, sectionRef, trendingRef, popularRef }) => {
                 Popular
               </p>
             </li>
-            <li>
+            <li onClick={handleScrollTogenre}>
               <p className="block py-2 px-3  rounded-sm hover:bg-gray-100 md:hover:bg-transparent transition-colors hover:text-[#39ff14] md:p-0 dark:text-white  dark:hover:bg-gray-700 md:dark:hover:bg-transparent dark:border-gray-700">
                 Genre
               </p>

@@ -3,6 +3,7 @@ import wall2 from "../assests/Wall2.jpg";
 import NavBar from "../Home/NavBar";
 import { useNavigate, useParams } from "react-router-dom";
 import Footer from "../Footer/footer";
+import React from "react";
 
 const SearcedResulttt = () => {
   const { query } = useParams(); // Get search term from URL
@@ -17,6 +18,7 @@ const SearcedResulttt = () => {
 
   const API_KEY = "2b42109ec723deefd4b119269974252b";
   const url = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${formattedQuery}`;
+  const url2 = `https://api.themoviedb.org/3/search/tv?api_key=${API_KEY}&query=${formattedQuery}`;
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -24,24 +26,59 @@ const SearcedResulttt = () => {
 
   useEffect(() => {
     if (!query) return;
-    fetch(url)
-      .then((response) => response.json())
-      .then((data) => {
-        const FilteredData = data.results.filter(
+    Promise.all([
+      fetch(url).then((res) => res.json()),
+      fetch(url2).then((res) => res.json()),
+    ])
+      .then(([data1, data2]) => {
+        const FilteredData = data1.results.filter(
           (data) => data.backdrop_path !== null
         );
-        console.log(FilteredData);
-        setData(FilteredData);
+
+        const FilteredData2 = data2.results.filter(
+          (data) => data.backdrop_path !== null
+        );
+
+        let combinedData = [...FilteredData, ...FilteredData2]; // Merging both results
+
+        // Shuffle the array
+        combinedData = combinedData.sort(() => Math.random() - 0.5);
+
+        setData(combinedData);
       })
-      .catch((err) => console.log(err));
-  }, [url, query]);
+      .catch((err) => console.error(err));
+  }, [url, url2, query]);
 
   const HandleClick = (id) => {
-    navigate(`/movie/${query}/${id}`);
+    if (id.title) {
+      navigate(`/movie/${query}/${id.id}`);
+    } else if (id.name) {
+      navigate(`/tv/${query}/${id.id}`);
+    }
   };
 
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    const handlePageLoad = () => {
+      setIsLoaded(true); // Trigger animation after page load
+    };
+
+    if (document.readyState === "complete") {
+      handlePageLoad();
+    } else {
+      window.addEventListener("load", handlePageLoad);
+    }
+
+    return () => window.removeEventListener("load", handlePageLoad);
+  }, []);
+
   return (
-    <>
+    <div
+      className={`transition-opacity duration-500 ${
+        !isLoaded ? "opacity-0 pointer-events-none" : "opacity-100"
+      }`}
+    >
       <NavBar />
       <div
         className="relative w-full h-[20rem] bg-cover bg-center"
@@ -58,7 +95,7 @@ const SearcedResulttt = () => {
               <div
                 key={item.id}
                 className="text-white overflow-hidden rounded-lg shadow-lg hover:shadow-[0_10px_30px_rgba(0,255,0,0.6)] hover:scale-105 transition-transform duration-300 ease-in-out w-[200px] h-[300px] relative flex-shrink-0 mx-[1.5rem] my-[3rem]"
-                onClick={() => HandleClick(item.id)}
+                onClick={() => HandleClick(item)}
               >
                 {/* Gradient Overlay for Better Visibility */}
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/30 to-black/80"></div>
@@ -73,7 +110,7 @@ const SearcedResulttt = () => {
                 {/* Text Content */}
                 <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/80 to-transparent">
                   <h3 className="text-lg font-bold mb-1 text-white drop-shadow-md">
-                    {item.title}
+                    {item.title || item.name}
                   </h3>
                 </div>
               </div>
@@ -102,7 +139,7 @@ const SearcedResulttt = () => {
         </div>
       </div>
       <Footer />
-    </>
+    </div>
   );
 };
 
