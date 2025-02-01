@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 const Trending = forwardRef((props, ref) => {
   const navigate = useNavigate();
   // Total number of items
-  const API_KEY = "2b42109ec723deefd4b119269974252b";
+  const API_KEY = String(process.env.REACT_APP_API_KEY).trim();
   const timeWindow = "week"; // or "day"
   const url = `https://api.themoviedb.org/3/trending/movie/${timeWindow}?api_key=${API_KEY}`;
 

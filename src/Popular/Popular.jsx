@@ -2,7 +2,7 @@ import { forwardRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Popular = forwardRef((props, ref) => {
-  const API_KEY = "2b42109ec723deefd4b119269974252b";
+  const API_KEY = String(process.env.REACT_APP_API_KEY).trim();
 
   const url = `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}`;
 

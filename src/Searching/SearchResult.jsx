@@ -1,6 +1,64 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function SearchResult() {
+  const API_KEY = String(process.env.REACT_APP_API_KEY).trim();
+  const [genre, setGenre] = useState(null);
+  const [genreValue, setGenreValue] = useState("1");
+  const [Data, getData] = useState(null);
+  const [resetCarousel, setResetCarousel] = useState(false);
+  useEffect(() => {
+    fetch(
+      `https://api.themoviedb.org/3/genre/tv/list?api_key=${API_KEY}&language=en-US`
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        setGenre(
+          data.genres.filter(
+            (genre) =>
+              genre.name !== "Action & Adventure" &&
+              genre.name !== "Sci-Fi & Fantasy"
+          )
+        );
+      })
+      .catch((err) => console.error(err));
+  }, [API_KEY]);
+
+  const fetchMovies = (genre) => {
+    let url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}`;
+    let url2 = `https://api.themoviedb.org/3/discover/tv?api_key=${API_KEY}`;
+
+    if (genre !== "1") {
+      url += `&with_genres=${genre}`;
+      url2 += `&with_genres=${genre}`;
+    }
+
+    console.log(url);
+
+    Promise.all([
+      fetch(url).then((res) => res.json()),
+      fetch(url2).then((res) => res.json()),
+    ])
+      .then(([data1, data2]) => {
+        console.log(data2.results);
+        let combinedData = [...data1.results, ...data2.results]; // Merging both results
+
+        // Shuffle the array
+        combinedData = combinedData.sort(() => Math.random() - 0.5);
+
+        getData(combinedData);
+
+        setResetCarousel(true);
+      })
+      .catch((err) => console.error(err));
+  };
+
+  // Fetch movies when genreValue changes
+  useEffect(() => {
+    fetchMovies(genreValue);
+  }, [genreValue]);
+
   return (
     <>
       <div className="pt-8 pb-16 bg-deep-space bg-opacity-80">
@@ -19,139 +77,51 @@ export default function SearchResult() {
         </div>
         <div className="flex ml-[3rem]  items-center space-x-4">
           <label className="text-white text-lg">Select Genre:</label>
-          <select className="p-3 rounded-md text-lg bg-gray-800 text-white border-2 border-transparent focus:outline-none focus:ring-4 focus:ring-[#39ff14] hover:bg-gray-700 hover:ring-2 hover:ring-[#39ff14] transition-all duration-300 ">
+          <select
+            className="p-3 rounded-md text-lg bg-gray-800 text-white border-2 border-transparent focus:outline-none focus:ring-4 focus:ring-[#39ff14] hover:bg-gray-700 hover:ring-2 hover:ring-[#39ff14] transition-all duration-300 "
+            onChange={(e) => {
+              console.log(e.target.value);
+              setGenreValue(e.target.value);
+            }}
+          >
+            <option value="1">All</option>
             <option value="28">Action</option>
-            <option value="35">Comedy</option>
-            <option value="18">Drama</option>
-            <option value="28">Action</option>
-            <option value="35">Comedy</option>
-            <option value="18">Drama</option>
-            <option value="28">Action</option>
-            <option value="35">Comedy</option>
-            <option value="18">Drama</option>
-            <option value="28">Action</option>
-            <option value="35">Comedy</option>
-            <option value="18">Drama</option>
-            <option value="28">Action</option>
-            <option value="35">Comedy</option>
-            <option value="18">Drama</option>
+            <option value="12">Adventure</option>
+            <option value="878">Sci-Fi</option>
+            <option value="14">Fantasy</option>
+            {genre &&
+              genre.map((item) => <option value={item.id}>{item.name}</option>)}
             {/* Add other genres here */}
           </select>
         </div>
         {/* Movie Cards */}
         <div className="px-4 md:px-8 lg:px-12 ">
-          <Card />
+          <Card
+            MetaData={Data}
+            reset={resetCarousel}
+            setReset={setResetCarousel}
+          />
         </div>
       </div>
     </>
   );
 }
-const Card = () => {
+const Card = ({ MetaData, reset, setReset }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const slidesToShow = 4; // Number of slides visible at a time
-  const Data = [
-    {
-      id: 1,
-      title: "Movie 1",
-      description: "This is the description for Movie 1.",
-      image: "https://via.placeholder.com/150",
-      releaseDate: "2025-01-01",
-    },
-    {
-      id: 2,
-      title: "Movie 2",
-      description: "This is the description for Movie 2.",
-      image: "https://via.placeholder.com/150",
-      releaseDate: "2025-01-02",
-    },
-    {
-      id: 3,
-      title: "Movie 3",
-      description: "This is the description for Movie 3.",
-      image: "https://via.placeholder.com/150",
-      releaseDate: "2025-01-03",
-    },
-    {
-      id: 4,
-      title: "Movie 4",
-      description: "This is the description for Movie 4.",
-      image: "https://via.placeholder.com/150",
-      releaseDate: "2025-01-04",
-    },
-    {
-      id: 5,
-      title: "Movie 5",
-      description: "This is the description for Movie 5.",
-      image: "https://via.placeholder.com/150",
-      releaseDate: "2025-01-05",
-    },
-    {
-      id: 6,
-      title: "Movie 6",
-      description: "This is the description for Movie 6.",
-      image: "https://via.placeholder.com/150",
-      releaseDate: "2025-01-06",
-    },
-    {
-      id: 7,
-      title: "Movie 7",
-      description: "This is the description for Movie 7.",
-      image: "https://via.placeholder.com/150",
-      releaseDate: "2025-01-07",
-    },
-    {
-      id: 8,
-      title: "Movie 8",
-      description: "This is the description for Movie 8.",
-      image: "https://via.placeholder.com/150",
-      releaseDate: "2025-01-08",
-    },
-    {
-      id: 9,
-      title: "Movie 9",
-      description: "This is the description for Movie 9.",
-      image: "https://via.placeholder.com/150",
-      releaseDate: "2025-01-09",
-    },
-    {
-      id: 10,
-      title: "Movie 10",
-      description: "This is the description for Movie 10.",
-      image: "https://via.placeholder.com/150",
-      releaseDate: "2025-01-10",
-    },
-    {
-      id: 11,
-      title: "Movie 11",
-      description: "This is the description for Movie 11.",
-      image: "https://via.placeholder.com/150",
-      releaseDate: "2025-01-11",
-    },
-    {
-      id: 12,
-      title: "Movie 12",
-      description: "This is the description for Movie 12.",
-      image: "https://via.placeholder.com/150",
-      releaseDate: "2025-01-12",
-    },
-    {
-      id: 13,
-      title: "Movie 13",
-      description: "This is the description for Movie 13.",
-      image: "https://via.placeholder.com/150",
-      releaseDate: "2025-01-13",
-    },
-    {
-      id: 14,
-      title: "Movie 14",
-      description: "This is the description for Movie 14.",
-      image: "https://via.placeholder.com/150",
-      releaseDate: "2025-01-14",
-    },
-  ];
-  const PendingSlides = Data.length - 5;
+  const PendingSlides = MetaData && MetaData.length - 5;
   const [disable, setDisable] = useState(false);
   const [prevDisable, setPrevDisable] = useState(true);
+  const naviagte = useNavigate();
+
+  useEffect(() => {
+    if (reset) {
+      console.log("Reset Triggers");
+      setCurrentSlide(0);
+      setDisable(false);
+      setPrevDisable(true);
+    }
+  }, [reset]);
 
   const handleNext = () => {
     console.log(PendingSlides);
@@ -169,6 +139,7 @@ const Card = () => {
       }
     }
     setPrevDisable(false);
+    setReset(false);
   };
 
   const handlePrev = () => {
@@ -184,6 +155,16 @@ const Card = () => {
       }
     }
     setDisable(false);
+  };
+
+  const HandleRouting = (Data) => {
+    if (Data.title) {
+      const query = Data.title.toLowerCase().replace(/\s+/g, "-");
+      naviagte(`/movie/${query}/${Data.id}`);
+    } else {
+      const query = Data.name.toLowerCase().replace(/\s+/g, "-");
+      naviagte(`/tv/${query}/${Data.id}`);
+    }
   };
 
   return (
@@ -206,33 +187,34 @@ const Card = () => {
           // style={{ transform: `translateX(-${currentSlide * 100}%)` }}
           style={{ transform: `translateX(-${currentSlide * 20}%)` }}
         >
-          {Data.map((item) => (
-            <div
-              key={item.id}
-              className="text-white  overflow-hidden shadow-lg hover:shadow-[0_10px_30px_rgba(0,255,0,0.6)] hover:scale-105 transition-transform duration-300 ease-in-out w-0 h-300px relative flex-shrink-0 mr-[1.95rem] ml-[3.2rem] my-[5rem]"
-              style={{ flex: `0 0 calc(100% / ${slidesToShow + 3.1})` }}
-            >
-              {/* Gradient Overlay for Entire Card */}
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black opacity-80"></div>
+          {MetaData &&
+            MetaData.map((item) => (
+              <div
+                key={item.id}
+                className="text-white  overflow-hidden shadow-lg hover:shadow-[0_10px_30px_rgba(0,255,0,0.6)] hover:scale-105 transition-transform duration-300 ease-in-out w-0 h-300px relative flex-shrink-0 mr-[1.95rem] ml-[3.2rem] my-[5rem]"
+                style={{ flex: `0 0 calc(100% / ${slidesToShow + 3.1})` }}
+                onClick={() => {
+                  HandleRouting(item);
+                }}
+              >
+                {/* Gradient Overlay for Entire Card */}
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black opacity-80"></div>
 
-              {/* Movie Image */}
-              <img
-                src={`https://moviesmod.cash/wp-content/uploads/2025/01/Sonic-the-Hedgehog-3-2024-MoviesMod.red_.jpg`}
-                alt={item.title}
-                className="object-cover"
-              />
+                {/* Movie Image */}
+                <img
+                  src={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
+                  alt={item.title}
+                  className="object-cover"
+                />
 
-              {/* Text Content */}
-              <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black to-transparent">
-                <h3 className="text-lg font-bold mb-2 text-white drop-shadow-md">
-                  {item.title}
-                </h3>
-                <p className="text-sm text-gray-300 drop-shadow-sm">
-                  {item.description}
-                </p>
+                {/* Text Content */}
+                <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black to-transparent">
+                  <h3 className="text-lg font-bold mb-2 text-white drop-shadow-md">
+                    {item.title || item.name}
+                  </h3>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
 

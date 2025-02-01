@@ -2,55 +2,99 @@ import { useEffect, useState } from "react";
 import Footer from "../Footer/footer";
 import NavBar from "../Home/NavBar";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+const API_KEY = String(process.env.REACT_APP_API_KEY).trim();
+const TOKEN = process.env.REACT_APP_TOKEN_KEY;
+console.log(API_KEY);
+const Details = ({ type }) => {
+  //For Navigation
+  const navigate = useNavigate();
+  const { id, query } = useParams();
+  const [data, setData] = useState(null);
+  const [youtubedata, setYoutubeData] = useState(null);
+  const [similarMovies, setSimilarMovies] = useState([]);
+  const [ottLinks, setOttLinks] = useState([]);
 
-const Details = () => {
-  const movie = {
-    id: 550,
-    title: "Fight Club",
-    overview:
-      "An insomniac office worker and a devil-may-care soap maker form an underground fight club that evolves into much more.",
-    release_date: "1999-10-15",
-    runtime: 139,
-    vote_average: 8.4,
-    genres: ["Drama"],
-    backdrop_path: "/fCayJrkfRaCRCTh8GqN30f8oyQF.jpg",
-    poster_path: "/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg",
-    production_companies: [
-      {
-        name: "20th Century Fox",
-        logo_path: "/hUzeosd33nzE5MCNsZxCGEKTXaQ.png",
-      },
-      {
-        name: "Regency Enterprises",
-        logo_path: "/3tvBqYsBhxWeHlu62SIJ1el93O7.png",
-      },
-    ],
+  //Getting OTT Platforms
+  const OTT = (userRegion) => {
+    fetch(
+      `https://api.themoviedb.org/3/${type}/${id}/watch/providers?api_key=${API_KEY}`
+    )
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.results && json.results[userRegion]) {
+          console.log(json.results[userRegion]);
+          setOttLinks(json.results[userRegion]); // Set the providers for the region
+        } else {
+          console.error("No providers found for this region");
+        }
+      });
   };
 
+  // For Scrol TO Top
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+  });
 
-  const API_KEY = "2b42109ec723deefd4b119269974252b";
-  const { id } = useParams();
-  const [data, setData] = useState(null);
+  // for getting Country of the user
+  useEffect(() => {
+    fetch(`https://ipinfo.io/json?token=${TOKEN}`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(typeof data.country); // Example: "US"
+        OTT(data.country);
+      })
+      .catch((error) => console.error("Error:", error));
+  }, [query]);
 
+  //Getting Details of MOvie User Searched
   useEffect(() => {
     if (id) {
-      fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}`)
+      const url = `https://api.themoviedb.org/3/${type}/${id}?api_key=${API_KEY}`;
+      console.log("Fetching:", url); // Debug URL
+      const url2nd = `https://api.themoviedb.org/3/${type}/${id}/videos?api_key=${API_KEY}&language=en-US`;
+      fetch(url)
         .then((response) => response.json())
         .then((data) => {
           console.log(data);
           setData(data);
         })
         .catch((error) => console.error("Error fetching movie:", error));
-    }
-  }, [id]);
 
-  console.log(id);
+      fetch(url2nd)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          const trailer =
+            data &&
+            data.results.find(
+              (vid) =>
+                vid.site === "YouTube" &&
+                (vid.type === "Trailer" || vid.type === "Opening Credits")
+            );
+          console.log(trailer, " is trailer of show");
+          trailer &&
+            setYoutubeData(
+              trailer.length > 0 ? trailer[trailer.length].key : trailer.key
+            );
+        })
+        .catch((error) => console.error("Error fetching movie:", error));
+
+      fetch(
+        `https://api.themoviedb.org/3/${type}/${id}/similar?api_key=${API_KEY}`
+      )
+        .then((res) => res.json())
+        .then((json) =>
+          setSimilarMovies(
+            json.results.slice(0, 10).filter((t) => t.poster_path !== null)
+          )
+        );
+    }
+  }, [id, query]);
 
   const [isLoaded, setIsLoaded] = useState(false);
 
+  //For Loader
   useEffect(() => {
     const handlePageLoad = () => {
       setIsLoaded(true); // Trigger animation after page load
@@ -65,6 +109,15 @@ const Details = () => {
     return () => window.removeEventListener("load", handlePageLoad);
   }, []);
 
+  const HandleClick = (Dataa) => {
+    if (Dataa) {
+      const formattedQuery = Dataa.title
+        .replace(/-/g, " ")
+        .replace(/\b\w/g, (char) => char.toUpperCase());
+      navigate(`/movie/${formattedQuery}/${Dataa.id}`);
+    }
+  };
+
   return (
     <div
       className={`transition-opacity duration-500 ${
@@ -72,7 +125,7 @@ const Details = () => {
       }`}
     >
       <NavBar />
-      <div className="bg-gray-900 text-white min-h-screen">
+      <div className="bg-deep-space text-white min-h-screen">
         {/* Backdrop Section */}
         <div
           className="relative h-[30rem] w-full bg-cover bg-center"
@@ -90,9 +143,11 @@ const Details = () => {
               className="w-36 rounded-lg shadow-lg"
             />
             <div>
-              <h1 className="text-4xl font-bold">{data && data.title}</h1>
+              <h1 className="text-4xl font-bold">
+                {data && (data.title || data.name)}
+              </h1>
               <p className="text-lg text-gray-300">
-                {data && data.release_date}
+                {data && (data.release_date || data.last_air_date)}
               </p>
             </div>
           </div>
@@ -100,16 +155,38 @@ const Details = () => {
 
         {/* Details Section */}
         <div className="px-10 py-8">
-          <h2 className="text-2xl font-bold mb-4">Overview</h2>
+          <h2 className="text-5xl font-bold mb-4">Overview</h2>
           <p className="text-gray-300 mb-6">{data && data.overview}</p>
-          <div className="flex flex-wrap items-center gap-6 mb-6">
+
+          {youtubedata && (
+            <div className="mb-10">
+              <h2 className="text-5xl font-bold mb-6">Watch Trailer</h2>
+              <div className="flex justify-center items-center my-7">
+                <iframe
+                  width="65%"
+                  height="500"
+                  src={`https://www.youtube.com/embed/${youtubedata}`}
+                  title="Movie Trailer"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="rounded-lg shadow-lg"
+                ></iframe>
+              </div>
+            </div>
+          )}
+
+          <div className="flex flex-wrap items-center gap-6 mb-10">
             <div className="bg-gray-800 p-4 rounded-lg shadow-md">
               <p className="font-bold">Genres</p>
-              <p>{data && data.genres.join(", ")}</p>
+
+              <span>
+                {data && data.genres.map((item) => item.name).join(", ")}
+              </span>
             </div>
             <div className="bg-gray-800 p-4 rounded-lg shadow-md">
               <p className="font-bold">Runtime</p>
-              <p>{data && data.runtime} mins</p>
+              <p>{data && (data.runtime || data.episode_run_time[0])} mins</p>
             </div>
             <div className="bg-gray-800 p-4 rounded-lg shadow-md">
               <p className="font-bold">Rating</p>
@@ -118,18 +195,90 @@ const Details = () => {
           </div>
 
           {/* Production Companies */}
-          <h2 className="text-2xl font-bold mb-4">Production Companies</h2>
-          <div className="flex gap-6">
-            {movie.production_companies.map((company) => (
-              <div key={company.name} className="text-center">
-                <img
-                  src={`https://image.tmdb.org/t/p/w500${company.logo_path}`}
-                  alt={company.name}
-                  className="h-20 mx-auto"
-                />
-                <p className="mt-2">{company.name}</p>
+          <h2 className="text-5xl font-bold mb-10 mt-10">
+            Production Companies
+          </h2>
+          <div className="flex flex-wrap gap-10">
+            {data &&
+              data.production_companies.map((company) => (
+                <div key={company.name} className="text-center border-b">
+                  <img
+                    src={`https://image.tmdb.org/t/p/w500${company.logo_path}`}
+                    alt={company.name}
+                    className="h-20 mx-auto bg-white rounded-md p-2"
+                  />
+                  <p className="mt-2">{company.name}</p>
+                </div>
+              ))}
+          </div>
+
+          {/* Available on OTT */}
+          {ottLinks && (
+            <div className="my-10 ">
+              <h2 className="text-5xl font-bold mb-6">Available on</h2>
+              <div className="flex flex-wrap gap-6">
+                {/* Loop through buy, flatrate, and rent */}
+                {["buy", "flatrate", "rent"].map(
+                  (type) =>
+                    ottLinks[type] &&
+                    ottLinks[type].map((provider) => (
+                      <div
+                        key={provider.provider_id}
+                        className="text-center bg-gray-800 p-4 rounded-lg shadow-md"
+                      >
+                        {provider.logo_path && (
+                          <a
+                            href={ottLinks.link} // Global link for the OTT platform
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block"
+                          >
+                            <img
+                              src={`https://image.tmdb.org/t/p/w200${provider.logo_path}`}
+                              alt={provider.provider_name}
+                              className="h-16 mx-auto"
+                            />
+                          </a>
+                        )}
+                        <p className="mt-2">{provider.provider_name}</p>
+                        <p className="text-gray-400 text-sm capitalize">
+                          ({type})
+                        </p>
+                      </div>
+                    ))
+                )}
               </div>
-            ))}
+            </div>
+          )}
+
+          {/* SImilar Movies */}
+          <h2 className="text-5xl font-bold mt-10 mb-6">Similar Movies</h2>
+          <div className="flex flex-wrap justify-center ">
+            {similarMovies &&
+              similarMovies.map((item) => (
+                <div
+                  key={item.id}
+                  className="text-white overflow-hidden rounded-lg shadow-lg hover:shadow-[0_10px_30px_rgba(0,255,0,0.6)] hover:scale-105 transition-transform duration-300 ease-in-out w-[200px] h-[300px] relative flex-shrink-0 mx-[1.5rem] my-[3rem]"
+                  onClick={() => HandleClick(item)}
+                >
+                  {/* Gradient Overlay for Better Visibility */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/30 to-black/80"></div>
+
+                  {/* Movie Image */}
+                  <img
+                    src={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
+                    alt={item.title}
+                    className="w-full h-full object-cover"
+                  />
+
+                  {/* Text Content */}
+                  <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/80 to-transparent">
+                    <h3 className="text-lg font-bold mb-1 text-white drop-shadow-md">
+                      {item.title}
+                    </h3>
+                  </div>
+                </div>
+              ))}
           </div>
         </div>
       </div>

@@ -23,14 +23,18 @@ const SearcedResulttt = () => {
   }, []);
 
   useEffect(() => {
+    if (!query) return;
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
-        console.log(data.results);
-        setData(data.results);
+        const FilteredData = data.results.filter(
+          (data) => data.backdrop_path !== null
+        );
+        console.log(FilteredData);
+        setData(FilteredData);
       })
       .catch((err) => console.log(err));
-  }, [url]);
+  }, [url, query]);
 
   const HandleClick = (id) => {
     navigate(`/movie/${query}/${id}`);
@@ -49,7 +53,7 @@ const SearcedResulttt = () => {
       </div>
       <div className="bg-deep-space w-full min-h-screen p-8">
         <div className="flex flex-wrap justify-center">
-          {data &&
+          {data ? (
             data.map((item) => (
               <div
                 key={item.id}
@@ -73,7 +77,28 @@ const SearcedResulttt = () => {
                   </h3>
                 </div>
               </div>
-            ))}
+            ))
+          ) : (
+            <div className="">
+              <div class="loader">
+                <svg viewBox="0 0 80 80">
+                  <circle r="32" cy="40" cx="40" id="test"></circle>
+                </svg>
+              </div>
+
+              <div class="loader triangle">
+                <svg viewBox="0 0 86 80">
+                  <polygon points="43 8 79 72 7 72"></polygon>
+                </svg>
+              </div>
+
+              <div class="loader">
+                <svg viewBox="0 0 80 80">
+                  <rect height="64" width="64" y="8" x="8"></rect>
+                </svg>
+              </div>
+            </div>
+          )}
         </div>
       </div>
       <Footer />
