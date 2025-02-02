@@ -50,6 +50,7 @@ const SearcedResulttt = () => {
   }, [url, url2, query]);
 
   const HandleClick = (id) => {
+    setIsLoaded(false);
     if (id.title) {
       navigate(`/movie/${query}/${id.id}`);
     } else if (id.name) {
@@ -58,7 +59,6 @@ const SearcedResulttt = () => {
   };
 
   const [isLoaded, setIsLoaded] = useState(false);
-
   useEffect(() => {
     const handlePageLoad = () => {
       setIsLoaded(true); // Trigger animation after page load
@@ -75,8 +75,8 @@ const SearcedResulttt = () => {
 
   return (
     <div
-      className={`transition-opacity duration-500 ${
-        !isLoaded ? "opacity-0 pointer-events-none" : "opacity-100"
+      className={`opacity-0 transition-opacity duration-700 ${
+        isLoaded && "opacity-100"
       }`}
     >
       <NavBar />
