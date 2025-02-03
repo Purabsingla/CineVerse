@@ -1,7 +1,17 @@
 import "./App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {
+  unstable_HistoryRouter as HistoryRouter,
+  Routes,
+  Route,
+} from "react-router-dom";
 import React, { Suspense } from "react";
 import "./CSS/Loader.css";
+import Loader from "./Loader/Loader";
+import { createBrowserHistory } from "history";
+import { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+
+const history = createBrowserHistory();
 function App() {
   const Random = React.lazy(() => import("./Home/Random"));
   const Details = React.lazy(() => import("./Details/Details"));
@@ -10,132 +20,44 @@ function App() {
     <div className="App">
       {/*  */}
 
-      <BrowserRouter>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <Suspense
-                fallback={
-                  <div className="flex justify-center items-center h-screen">
-                    <div class="loader">
-                      <svg viewBox="0 0 80 80">
-                        <circle r="32" cy="40" cx="40" id="test"></circle>
-                      </svg>
-                    </div>
-
-                    <div class="loader triangle">
-                      <svg viewBox="0 0 86 80">
-                        <polygon points="43 8 79 72 7 72"></polygon>
-                      </svg>
-                    </div>
-
-                    <div class="loader">
-                      <svg viewBox="0 0 80 80">
-                        <rect height="64" width="64" y="8" x="8"></rect>
-                      </svg>
-                    </div>
-                  </div>
-                }
-              >
-                <Random />
-              </Suspense>
-            }
-          />
-          <Route
-            path="/search/:query"
-            element={
-              <Suspense
-                fallback={
-                  <div className="flex justify-center items-center h-screen">
-                    <div class="loader">
-                      <svg viewBox="0 0 80 80">
-                        <circle r="32" cy="40" cx="40" id="test"></circle>
-                      </svg>
-                    </div>
-
-                    <div class="loader triangle">
-                      <svg viewBox="0 0 86 80">
-                        <polygon points="43 8 79 72 7 72"></polygon>
-                      </svg>
-                    </div>
-
-                    <div class="loader">
-                      <svg viewBox="0 0 80 80">
-                        <rect height="64" width="64" y="8" x="8"></rect>
-                      </svg>
-                    </div>
-                  </div>
-                }
-              >
-                <SearchedResulttt />
-              </Suspense>
-            }
-          />
-          <Route
-            path="/movie/:query/:id"
-            element={
-              <Suspense
-                fallback={
-                  <div className="flex justify-center items-center h-screen">
-                    <div class="loader">
-                      <svg viewBox="0 0 80 80">
-                        <circle r="32" cy="40" cx="40" id="test"></circle>
-                      </svg>
-                    </div>
-
-                    <div class="loader triangle">
-                      <svg viewBox="0 0 86 80">
-                        <polygon points="43 8 79 72 7 72"></polygon>
-                      </svg>
-                    </div>
-
-                    <div class="loader">
-                      <svg viewBox="0 0 80 80">
-                        <rect height="64" width="64" y="8" x="8"></rect>
-                      </svg>
-                    </div>
-                  </div>
-                }
-              >
-                <Details type="movie" />
-              </Suspense>
-            }
-          />
-          <Route
-            path="/tv/:query/:id"
-            element={
-              <Suspense
-                fallback={
-                  <div className="flex justify-center items-center h-screen">
-                    <div class="loader">
-                      <svg viewBox="0 0 80 80">
-                        <circle r="32" cy="40" cx="40" id="test"></circle>
-                      </svg>
-                    </div>
-
-                    <div class="loader triangle">
-                      <svg viewBox="0 0 86 80">
-                        <polygon points="43 8 79 72 7 72"></polygon>
-                      </svg>
-                    </div>
-
-                    <div class="loader">
-                      <svg viewBox="0 0 80 80">
-                        <rect height="64" width="64" y="8" x="8"></rect>
-                      </svg>
-                    </div>
-                  </div>
-                }
-              >
-                <Details type="tv" />
-              </Suspense>
-            }
-          />
-        </Routes>
-      </BrowserRouter>
+      <HistoryRouter history={history}>
+        <TrackHistory />
+        <Suspense fallback={<Loader />}>
+          <Routes>
+            <Route path="/" element={<Random />} />
+            <Route path="/search/:query" element={<SearchedResulttt />} />
+            <Route
+              path="/movie/:query/:id"
+              element={<Details type="movie" />}
+            />
+            <Route path="/tv/:query/:id" element={<Details type="tv" />} />
+          </Routes>
+        </Suspense>
+      </HistoryRouter>
     </div>
   );
 }
 
 export default App;
+
+const TrackHistory = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (performance.navigation.type === 1) {
+      console.log("Page refreshed - preventing history overwrite.");
+      navigate(-1); // Moves back to prevent history loss
+    }
+  }, []);
+
+  useEffect(() => {
+    console.log(
+      "Navigated to:",
+      location.pathname,
+      "| History length:",
+      window.history.length
+    );
+  }, [location]);
+
+  return null;
+};

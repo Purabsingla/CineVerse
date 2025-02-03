@@ -5,15 +5,16 @@ import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 const API_KEY = String(process.env.REACT_APP_API_KEY).trim();
 const TOKEN = process.env.REACT_APP_TOKEN_KEY;
-console.log(API_KEY);
+
 const Details = ({ type }) => {
   //For Navigation
   const navigate = useNavigate();
-  const { id, query } = useParams();
+  const { id } = useParams();
   const [data, setData] = useState(null);
   const [youtubedata, setYoutubeData] = useState(null);
   const [similarMovies, setSimilarMovies] = useState([]);
   const [ottLinks, setOttLinks] = useState([]);
+  const [clickedItems, setClickedItems] = useState(new Set());
 
   //Getting OTT Platforms
   const OTT = (userRegion) => {
@@ -23,7 +24,6 @@ const Details = ({ type }) => {
       .then((res) => res.json())
       .then((json) => {
         if (json.results && json.results[userRegion]) {
-          console.log(json.results[userRegion]);
           setOttLinks(json.results[userRegion]); // Set the providers for the region
         } else {
           console.error("No providers found for this region");
@@ -34,29 +34,26 @@ const Details = ({ type }) => {
   // For Scrol TO Top
   useEffect(() => {
     window.scrollTo(0, 0);
-  });
+  }, []);
 
   // for getting Country of the user
   useEffect(() => {
     fetch(`https://ipinfo.io/json?token=${TOKEN}`)
       .then((response) => response.json())
       .then((data) => {
-        console.log(typeof data.country); // Example: "US"
         OTT(data.country);
       })
       .catch((error) => console.error("Error:", error));
-  }, [query]);
+  }, []);
 
   //Getting Details of MOvie User Searched
   useEffect(() => {
     if (id) {
       const url = `https://api.themoviedb.org/3/${type}/${id}?api_key=${API_KEY}`;
-      console.log("Fetching:", url); // Debug URL
       const url2nd = `https://api.themoviedb.org/3/${type}/${id}/videos?api_key=${API_KEY}&language=en-US`;
       fetch(url)
         .then((response) => response.json())
         .then((data) => {
-          console.log(data);
           const formatDates = (item) => ({
             ...item,
             release_date: item.release_date
@@ -81,7 +78,6 @@ const Details = ({ type }) => {
       fetch(url2nd)
         .then((response) => response.json())
         .then((data) => {
-          console.log(data);
           const trailer =
             data &&
             data.results.find(
@@ -91,7 +87,6 @@ const Details = ({ type }) => {
                   vid.type === "Opening Credits" ||
                   vid.type === "Teaser")
             );
-          console.log(trailer, " is trailer of show");
           trailer
             ? setYoutubeData(
                 trailer.length > 0 ? trailer[trailer.length].key : trailer.key
@@ -104,13 +99,15 @@ const Details = ({ type }) => {
         `https://api.themoviedb.org/3/${type}/${id}/similar?api_key=${API_KEY}`
       )
         .then((res) => res.json())
-        .then((json) =>
-          setSimilarMovies(
-            json.results.slice(0, 10).filter((t) => t.poster_path !== null)
-          )
-        );
+        .then((json) => {
+          const filteredMovies = json.results
+            .filter((t) => t.poster_path !== null)
+            .filter((movie) => !clickedItems.has(movie.id)); // ✅ Remove clicked items
+
+          setSimilarMovies(filteredMovies);
+        });
     }
-  }, [id, type, query]);
+  }, [id, type]);
 
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -131,18 +128,30 @@ const Details = ({ type }) => {
 
   const HandleClick = (Dataa) => {
     if (Dataa) {
+      let newPath = "";
       if (Dataa.title) {
         const formattedQuery = Dataa.title
           .replace(/-/g, " ")
           .replace(/\b\w/g, (char) => char.toUpperCase());
-        navigate(`/movie/${formattedQuery}/${Dataa.id}`);
+        newPath = `/movie/${formattedQuery}/${Dataa.id}`;
       } else if (Dataa.name) {
         const formattedQuery = Dataa.name
           .replace(/-/g, " ")
           .replace(/\b\w/g, (char) => char.toUpperCase());
-        navigate(`/tv/${formattedQuery}/${Dataa.id}`);
+        newPath = `/tv/${formattedQuery}/${Dataa.id}`;
+      }
+
+      // 🔥 Prevent duplicate history entries 🔥
+      if (window.location.pathname !== newPath) {
+        console.log("Navigating to:", newPath);
+        setClickedItems((prev) => new Set(prev).add(Dataa.id));
+        navigate(newPath);
       }
     }
+  };
+
+  window.onpopstate = () => {
+    console.log("Back button pressed! History Length:", window.history.length);
   };
 
   function formatDate(dateString) {
