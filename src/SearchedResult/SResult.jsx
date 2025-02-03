@@ -31,6 +31,8 @@ const SearcedResulttt = () => {
       fetch(url2).then((res) => res.json()),
     ])
       .then(([data1, data2]) => {
+        console.log(data2.results);
+        console.log(data1.results);
         const FilteredData = data1.results.filter(
           (data) => data.backdrop_path !== null
         );
@@ -42,7 +44,7 @@ const SearcedResulttt = () => {
         let combinedData = [...FilteredData, ...FilteredData2]; // Merging both results
 
         // Shuffle the array
-        combinedData = combinedData.sort(() => Math.random() - 0.5);
+        combinedData = combinedData.sort((a, b) => b.popularity - a.popularity);
 
         setData(combinedData);
       })

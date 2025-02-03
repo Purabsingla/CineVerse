@@ -57,7 +57,24 @@ const Details = ({ type }) => {
         .then((response) => response.json())
         .then((data) => {
           console.log(data);
-          setData(data);
+          const formatDates = (item) => ({
+            ...item,
+            release_date: item.release_date
+              ? formatDate(item.release_date)
+              : undefined,
+            last_air_date: item.last_air_date
+              ? formatDate(item.last_air_date)
+              : undefined,
+          });
+
+          // If the response is an array, process each item
+          if (Array.isArray(data)) {
+            setData(data.map(formatDates));
+          }
+          // If the response is a single object, format its dates
+          else if (data && typeof data === "object") {
+            setData(formatDates(data));
+          }
         })
         .catch((error) => console.error("Error fetching movie:", error));
 
@@ -128,6 +145,11 @@ const Details = ({ type }) => {
     }
   };
 
+  function formatDate(dateString) {
+    const [year, month, day] = dateString.split("-");
+    return `${day}-${month}-${year}`;
+  }
+
   return (
     <div
       className={`transition-opacity duration-500 ${
@@ -156,8 +178,12 @@ const Details = ({ type }) => {
               <h1 className="text-4xl font-bold">
                 {data && (data.title || data.name)}
               </h1>
-              <p className="text-lg text-gray-300">
+              <p className="text-lg text-gray-100 mt-2">
                 {data && (data.release_date || data.last_air_date)}
+              </p>
+              <p className="text-lg text-gray-100 mt-2">
+                Original {type === "movie" ? "Title" : "Name"} :-{" "}
+                {data && (data.original_name || data.original_title)}
               </p>
             </div>
           </div>
@@ -327,14 +353,14 @@ const Details = ({ type }) => {
                   {/* Movie Image */}
                   <img
                     src={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
-                    alt={item.title}
+                    alt={item.title || item.name}
                     className="w-full h-full object-cover"
                   />
 
                   {/* Text Content */}
                   <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/80 to-transparent">
                     <h3 className="text-lg font-bold mb-1 text-white drop-shadow-md">
-                      {item.title}
+                      {item.title || item.name}
                     </h3>
                   </div>
                 </div>

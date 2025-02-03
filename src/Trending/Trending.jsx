@@ -30,23 +30,40 @@ const Trending = forwardRef((props, ref) => {
   }, [url]);
 
   return (
-    <div className="pt-8  bg-deep-space bg-opacity-80 transition-all" ref={ref}>
-      {/* Heading Section */}
-      <div className="py-8">
+    // <div className="pt-8  bg-deep-space bg-opacity-80 transition-all" ref={ref}>
+
+    //   <div className="py-8">
+    //     <div
+    //       className="text-center py-6"
+    //       style={{
+    //         background: "radial-gradient(circle, #001f3f, black)",
+    //       }}
+    //     >
+    //       <h1 className="text-3xl font-bold text-white drop-shadow-lg">
+    //         Trending Movies
+    //       </h1>
+    //     </div>
+    //   </div>
+
+    //   <div className="px-4 md:px-8 lg:px-12 ">
+    //     <Card MetaData={data} HandleNavigate={HandleNavigate} />
+    //   </div>
+    // </div>
+    <div className="pt-8 bg-deep-space bg-opacity-80 transition-all" ref={ref}>
+      <div className="py-6">
         <div
           className="text-center py-6"
           style={{
             background: "radial-gradient(circle, #001f3f, black)",
           }}
         >
-          <h1 className="text-3xl font-bold text-white drop-shadow-lg">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white drop-shadow-lg">
             Trending Movies
           </h1>
         </div>
       </div>
 
-      {/* Carousel Section */}
-      <div className="px-4 md:px-8 lg:px-12 ">
+      <div className="px-2 sm:px-4 md:px-8 lg:px-12">
         <Card MetaData={data} HandleNavigate={HandleNavigate} />
       </div>
     </div>
@@ -119,7 +136,7 @@ const Card = ({ MetaData, HandleNavigate }) => {
             MetaData.map((item) => (
               <div
                 key={item.id}
-                className="text-white  overflow-hidden shadow-lg hover:shadow-[0_10px_30px_rgba(0,255,0,0.6)] hover:scale-105 transition-transform duration-300 ease-in-out w-0 h-300px relative flex-shrink-0 mr-[1.95rem] ml-[3.2rem] my-[5rem]"
+                className="text-white overflow-hidden shadow-lg hover:shadow-[0_10px_30px_rgba(0,255,0,0.6)] hover:scale-105 transition-transform duration-300 ease-in-out min-w-[197px] h-[300px] relative  mr-[1.95rem] ml-[3.2rem] my-[5rem]"
                 style={{ flex: `0 0 calc(100% / ${slidesToShow + 3.1})` }}
                 onClick={() => {
                   HandleNavigate(item);
@@ -132,7 +149,7 @@ const Card = ({ MetaData, HandleNavigate }) => {
                 <img
                   src={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
                   alt={item.title}
-                  className="object-cover"
+                  className="w-full h-full object-cover"
                 />
 
                 {/* Text Content */}
