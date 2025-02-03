@@ -121,7 +121,7 @@ const Card = ({ MetaData, HandleNavigate }) => {
             MetaData.map((item) => (
               <div
                 key={item.id}
-                className="text-white  overflow-hidden shadow-lg hover:shadow-[0_10px_30px_rgba(0,255,0,0.6)] hover:scale-105 transition-transform duration-300 ease-in-out w-0 h-300px relative flex-shrink-0 mr-[1.95rem] ml-[3.2rem] my-[5rem]"
+                className="text-white cursor-pointer overflow-hidden shadow-lg hover:shadow-[0_10px_30px_rgba(0,255,0,0.6)] hover:scale-105 transition-transform duration-300 ease-in-out w-0 h-300px relative flex-shrink-0 mr-[1.95rem] ml-[3.2rem] my-[5rem]"
                 style={{ flex: `0 0 calc(100% / ${slidesToShow + 3.1})` }}
                 onClick={() => {
                   HandleNavigate(item);
