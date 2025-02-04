@@ -45,6 +45,12 @@ const NavBar = ({ sectionRef, trendingRef, popularRef, genreRef }) => {
     } else navigate("/#popular-section");
   };
 
+  const HandleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
   const handleSearch = () => {
     if (search.trim()) {
       const formattedSearch = search.toLowerCase().replace(/\s+/g, "-"); // Format for URL
@@ -67,15 +73,16 @@ const NavBar = ({ sectionRef, trendingRef, popularRef, genreRef }) => {
             <input
               type="text"
               id="search-desktop"
-              className="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 placeholder-gray-500 transition-colors focus:ring-[#39ff14] focus:border-[#39ff14] focus:placeholder-[#39ff14] focus:text-[#39ff14] dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-[#39ff14] dark:focus:border-[#39ff14]"
+              className="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 placeholder-gray-500 transition-colors focus:ring-[#00FFFF] focus:border-[#00FFFF] focus:placeholder-[#00FFFF] focus:text-[#00FFFF] dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-[#00FFFF] dark:focus:border-[#00FFFF]"
               placeholder="Search..."
               onChange={(e) => {
                 setSearch(e.target.value);
               }}
+              onKeyPress={HandleKeyPress}
             />
             <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
               <svg
-                className="w-4 h-4 text-gray-500 dark:text-gray-400 font-extrabold transition-colors group-hover:text-[#39ff14] group-focus-within:text-[#39ff14]"
+                className="w-4 h-4 text-gray-500 dark:text-gray-400 font-extrabold transition-colors group-hover:text-[#00FFFF] group-focus-within:text-[#00FFFF]"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 20 20"
@@ -90,7 +97,7 @@ const NavBar = ({ sectionRef, trendingRef, popularRef, genreRef }) => {
           </div>
 
           <button
-            className=" ml-1  p-2 text-base font-medium bg-[#39ff14] text-white rounded-lg transition-colors hover:bg-[#32cc13]"
+            className=" ml-1  p-2 text-base font-medium bg-[#00FFFF] text-white rounded-lg transition-colors hover:bg-[#00BFFF]"
             onClick={handleSearch}
           >
             Search
@@ -126,7 +133,7 @@ const NavBar = ({ sectionRef, trendingRef, popularRef, genreRef }) => {
           id="navbar-search"
         >
           {/* Search Bar for Mobile */}
-          <div className="relative md:hidden mt-12 mb-4 transition-colors hover:border hover:border-[#39ff14]">
+          <div className="relative md:hidden mt-12 mb-4 transition-colors hover:border hover:border-[#00FFFF]">
             <input
               type="text"
               id="search-mobile"
@@ -153,7 +160,7 @@ const NavBar = ({ sectionRef, trendingRef, popularRef, genreRef }) => {
           <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg backdrop-blur-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 cursor-pointer">
             <li onClick={handleScrollToHome}>
               <p
-                className="block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:p-0 transition-colors hover:text-[#39ff14]"
+                className="block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:p-0 transition-colors hover:text-[#00FFFF]"
                 aria-current="page"
               >
                 Home
@@ -161,19 +168,19 @@ const NavBar = ({ sectionRef, trendingRef, popularRef, genreRef }) => {
             </li>
             <li onClick={handleScrollToTrending}>
               <p
-                className="block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:p-0 transition-colors hover:text-[#39ff14]"
+                className="block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:p-0 transition-colors hover:text-[#00FFFF]"
                 aria-current="page"
               >
                 Trending
               </p>
             </li>
             <li onClick={handleScrollToPopular}>
-              <p className="block py-2 px-3  rounded-sm hover:bg-gray-100 md:hover:bg-transparent transition-colors hover:text-[#39ff14] md:p-0 dark:text-white dark:hover:bg-gray-700  md:dark:hover:bg-transparent dark:border-gray-700">
+              <p className="block py-2 px-3  rounded-sm hover:bg-gray-100 md:hover:bg-transparent transition-colors hover:text-[#00FFFF] md:p-0 dark:text-white dark:hover:bg-gray-700  md:dark:hover:bg-transparent dark:border-gray-700">
                 Popular
               </p>
             </li>
             <li onClick={handleScrollTogenre}>
-              <p className="block py-2 px-3  rounded-sm hover:bg-gray-100 md:hover:bg-transparent transition-colors hover:text-[#39ff14] md:p-0 dark:text-white  dark:hover:bg-gray-700 md:dark:hover:bg-transparent dark:border-gray-700">
+              <p className="block py-2 px-3  rounded-sm hover:bg-gray-100 md:hover:bg-transparent transition-colors hover:text-[#00FFFF] md:p-0 dark:text-white  dark:hover:bg-gray-700 md:dark:hover:bg-transparent dark:border-gray-700">
                 Genre
               </p>
             </li>

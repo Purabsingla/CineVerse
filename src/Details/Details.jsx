@@ -213,16 +213,14 @@ const Details = ({ type }) => {
           {youtubedata && (
             <div className="mb-10">
               <h2 className="text-5xl font-bold mb-6">Watch Trailer</h2>
-              <div className="flex justify-center items-center my-7">
+              <div className="relative w-full md:w-3/4 lg:w-2/3 xl:w-1/2 2xl:w-1/2 mx-auto pb-[56.25%]  md:pb-[50%] lg:pb-[45%] xl:pb-[40%] 2xl:pb-[35%] h-0 my-7">
                 <iframe
-                  width="65%"
-                  height="500"
                   src={`https://www.youtube.com/embed/${youtubedata}`}
                   title="Movie Trailer"
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
-                  className="rounded-lg shadow-lg"
+                  className="absolute top-0 left-0 w-full h-full rounded-lg shadow-lg"
                 ></iframe>
               </div>
             </div>
@@ -360,7 +358,7 @@ const Details = ({ type }) => {
               similarMovies.map((item) => (
                 <div
                   key={item.id}
-                  className="text-white cursor-pointer overflow-hidden rounded-lg shadow-lg hover:shadow-[0_10px_30px_rgba(0,255,0,0.6)] hover:scale-105 transition-transform duration-300 ease-in-out w-[200px] h-[300px] relative flex-shrink-0 mx-[1.5rem] my-[3rem]"
+                  className="text-white cursor-pointer overflow-hidden rounded-lg shadow-lg hover:shadow-[0_10px_30px_rgba(0,255,255,1)] hover:scale-105 transition-transform duration-300 ease-in-out w-[200px] h-[300px] relative flex-shrink-0 mx-[1.5rem] my-[3rem]"
                   onClick={() => HandleClick(item)}
                 >
                   {/* Gradient Overlay for Better Visibility */}

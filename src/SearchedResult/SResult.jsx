@@ -77,6 +77,12 @@ const SearcedResulttt = () => {
     return () => window.removeEventListener("load", handlePageLoad);
   }, []);
 
+  const [displayCount, setDisplayCount] = useState(10); // Initial number of items to display
+
+  const handleSeeMore = () => {
+    setDisplayCount((prevCount) => Math.min(prevCount + 10, data.length)); // Increment by 10 each click
+  };
+
   return (
     <div
       className={`opacity-0 transition-opacity duration-700 ${
@@ -95,10 +101,10 @@ const SearcedResulttt = () => {
       <div className="bg-deep-space w-full min-h-screen p-8">
         <div className="flex flex-wrap justify-center">
           {data ? (
-            data.map((item) => (
+            data.slice(0, displayCount).map((item) => (
               <div
                 key={item.id}
-                className="text-white cursor-pointer overflow-hidden rounded-lg shadow-lg hover:shadow-[0_10px_30px_rgba(0,255,0,0.6)] hover:scale-105 transition-transform duration-300 ease-in-out w-[200px] h-[300px] relative flex-shrink-0 mx-[1.5rem] my-[3rem]"
+                className="text-white cursor-pointer overflow-hidden rounded-lg shadow-lg hover:shadow-[0_10px_30px_rgba(0,255,255,1)] hover:scale-105 transition-transform duration-300 ease-in-out w-[200px] h-[300px] relative flex-shrink-0 mx-[1.5rem] my-[3rem]"
                 onClick={() => HandleClick(item)}
               >
                 {/* Gradient Overlay for Better Visibility */}
@@ -141,7 +147,18 @@ const SearcedResulttt = () => {
             </div>
           )}
         </div>
+        {displayCount < (data && data.length) && (
+          <div className="flex justify-center mt-8">
+            <button
+              className="bg-[#001f3f] text-white py-2 px-4 rounded-lg hover:bg-[#00bfff] transition duration-300"
+              onClick={handleSeeMore}
+            >
+              See More
+            </button>
+          </div>
+        )}
       </div>
+
       <Footer />
     </div>
   );

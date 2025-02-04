@@ -28,9 +28,9 @@
   &:focus {
     animation-name: glitch;
     animation-duration: 0.2s;
-    background-color: #39ff14;
+    background-color: #00ffff;
     color: black;
-    border: 1px solid #39ff14;
+    border: 1px solid #00ffff;
 
     .text-decoration {
       animation-name: blink;
@@ -47,7 +47,7 @@
 
   &:active {
     background: none;
-    color: #39ff14;
+    color: #00ffff;
 
     .text-decoration {
       animation-name: none;
@@ -96,7 +96,7 @@
   &:focus {
     animation-name: glitch;
     animation-duration: 0.2s;
-    background-color: #39ff14;
+    background-color: #00ffff;
     color: black;
     /* border: 1px solid #39ff14; */
 
@@ -115,7 +115,7 @@
 
   &:active {
     background: none;
-    color: #39ff14;
+    color: #00ffff;
 
     .text-decoration {
       animation-name: none;

@@ -112,7 +112,7 @@ const Card = ({ MetaData, HandleNavigate }) => {
           MetaData.map((item) => (
             <div
               key={item.id}
-              className="text-white cursor-pointer overflow-hidden shadow-lg hover:shadow-[0_10px_30px_rgba(0,255,0,0.6)] hover:scale-105 transition-transform duration-300 ease-in-out min-w-[200px] h-auto relative my-[5rem]"
+              className="text-white cursor-pointer overflow-hidden shadow-lg hover:shadow-[0_10px_30px_rgba(0,255,255,1)] hover:scale-105 transition-transform duration-300 ease-in-out min-w-[200px] h-auto relative my-[5rem]"
               onClick={() => {
                 HandleNavigate(item);
               }}
