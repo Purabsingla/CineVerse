@@ -3,6 +3,7 @@ import { Meta, useNavigate } from "react-router-dom";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import Loader from "../Loader/Loader";
 
 const SearchResult = forwardRef((props, ref) => {
   const API_KEY = String(process.env.REACT_APP_API_KEY).trim();
@@ -10,24 +11,27 @@ const SearchResult = forwardRef((props, ref) => {
   const [genreValue, setGenreValue] = useState("1");
   const [Data, getData] = useState([]);
   useEffect(() => {
-    fetch(
-      `https://api.themoviedb.org/3/genre/tv/list?api_key=${API_KEY}&language=en-US`
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        setGenre(
-          data.genres.filter(
-            (genre) =>
-              genre.name !== "Action & Adventure" &&
-              genre.name !== "Sci-Fi & Fantasy"
-          )
-        );
-      })
-      .catch((err) => console.error(err));
+    async function GETDATA() {
+      await fetch(
+        `https://api.themoviedb.org/3/genre/tv/list?api_key=${API_KEY}&language=en-US`
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          setGenre(
+            data.genres.filter(
+              (genre) =>
+                genre.name !== "Action & Adventure" &&
+                genre.name !== "Sci-Fi & Fantasy"
+            )
+          );
+        })
+        .catch((err) => console.error(err));
+    }
+    GETDATA();
   }, [API_KEY]);
 
-  const fetchMovies = (genre) => {
+  const fetchMovies = async (genre) => {
     let url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}`;
     let url2 = `https://api.themoviedb.org/3/discover/tv?api_key=${API_KEY}`;
 
@@ -38,7 +42,7 @@ const SearchResult = forwardRef((props, ref) => {
 
     console.log(url);
 
-    Promise.all([
+    await Promise.all([
       fetch(url).then((res) => res.json()),
       fetch(url2).then((res) => res.json()),
     ])
@@ -179,8 +183,7 @@ const Card = ({ MetaData }) => {
   return (
     <div className="relative overflow-hidden">
       <Slider ref={sliderRef} {...settings}>
-        {Array.isArray(MetaData) &&
-          MetaData &&
+        {Array.isArray(MetaData) && MetaData ? (
           MetaData.map((item) => (
             <div
               key={item.id}
@@ -206,7 +209,10 @@ const Card = ({ MetaData }) => {
                 </h3>
               </div>
             </div>
-          ))}
+          ))
+        ) : (
+          <Loader />
+        )}
       </Slider>
     </div>
   );
