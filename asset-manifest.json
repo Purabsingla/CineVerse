@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/CineVerse/static/css/main.d48956ce.css",
-    "main.js": "/CineVerse/static/js/main.c4980261.js",
+    "main.js": "/CineVerse/static/js/main.f2175973.js",
     "static/css/219.cef3a9ab.chunk.css": "/CineVerse/static/css/219.cef3a9ab.chunk.css",
     "static/js/219.988f7ffa.chunk.js": "/CineVerse/static/js/219.988f7ffa.chunk.js",
     "static/css/805.cef3a9ab.chunk.css": "/CineVerse/static/css/805.cef3a9ab.chunk.css",
@@ -14,7 +14,7 @@
     "static/media/Wall2.jpg": "/CineVerse/static/media/Wall2.685ac2822f860f66b8d2.jpg",
     "index.html": "/CineVerse/index.html",
     "main.d48956ce.css.map": "/CineVerse/static/css/main.d48956ce.css.map",
-    "main.c4980261.js.map": "/CineVerse/static/js/main.c4980261.js.map",
+    "main.f2175973.js.map": "/CineVerse/static/js/main.f2175973.js.map",
     "219.cef3a9ab.chunk.css.map": "/CineVerse/static/css/219.cef3a9ab.chunk.css.map",
     "219.988f7ffa.chunk.js.map": "/CineVerse/static/js/219.988f7ffa.chunk.js.map",
     "805.cef3a9ab.chunk.css.map": "/CineVerse/static/css/805.cef3a9ab.chunk.css.map",
@@ -26,6 +26,6 @@
   },
   "entrypoints": [
     "static/css/main.d48956ce.css",
-    "static/js/main.c4980261.js"
+    "static/js/main.f2175973.js"
   ]
 }
