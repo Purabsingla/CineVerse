@@ -9,3 +9,7 @@
 .carousel-item {
   overflow: hidden;
 }
+
+.slick-slide > div {
+  padding: 0 10px;
+}
