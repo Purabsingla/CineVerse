@@ -49,7 +49,9 @@ const SearcedResulttt = () => {
         setData(combinedData);
       })
       .catch((err) => console.error(err));
-  }, [url, url2, query]);
+
+    document.title = `Search Results for ${formattedQuery} - CineVerse`;
+  }, [url, url2, formattedQuery, query]);
 
   const HandleClick = (id) => {
     setIsLoaded(false);

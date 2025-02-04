@@ -1,6 +1,6 @@
 import "./App.css";
 import { HashRouter, Routes, Route } from "react-router-dom";
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect } from "react";
 import "./CSS/Loader.css";
 import Loader from "./Loader/Loader";
 
@@ -8,6 +8,9 @@ function App() {
   const Random = React.lazy(() => import("./Home/Random"));
   const Details = React.lazy(() => import("./Details/Details"));
   const SearchedResulttt = React.lazy(() => import("./SearchedResult/SResult"));
+  useEffect(() => {
+    document.title = "CineVerse - Discover Movies & Shows";
+  }, []);
   return (
     <div className="App">
       {/*  */}

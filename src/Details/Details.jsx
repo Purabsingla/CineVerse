@@ -9,12 +9,16 @@ const TOKEN = process.env.REACT_APP_TOKEN_KEY;
 const Details = ({ type }) => {
   //For Navigation
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { id, query } = useParams();
   const [data, setData] = useState(null);
   const [youtubedata, setYoutubeData] = useState(null);
   const [similarMovies, setSimilarMovies] = useState([]);
   const [ottLinks, setOttLinks] = useState([]);
   const [clickedItems, setClickedItems] = useState(new Set());
+
+  const formattedQuery = query
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
 
   //Getting OTT Platforms
   const OTT = (userRegion) => {
@@ -107,6 +111,8 @@ const Details = ({ type }) => {
           setSimilarMovies(filteredMovies);
         });
     }
+
+    document.title = `${formattedQuery} - CineVerse`;
   }, [id, type]);
 
   const [isLoaded, setIsLoaded] = useState(false);
