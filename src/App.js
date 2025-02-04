@@ -1,5 +1,5 @@
 import "./App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 import React, { Suspense } from "react";
 import "./CSS/Loader.css";
 import Loader from "./Loader/Loader";
@@ -12,7 +12,7 @@ function App() {
     <div className="App">
       {/*  */}
 
-      <BrowserRouter>
+      <HashRouter>
         <Suspense fallback={<Loader />}>
           <Routes>
             <Route path="/" element={<Random />} />
@@ -24,7 +24,7 @@ function App() {
             <Route path="/tv/:query/:id" element={<Details type="tv" />} />
           </Routes>
         </Suspense>
-      </BrowserRouter>
+      </HashRouter>
     </div>
   );
 }
