@@ -31,6 +31,7 @@ const SearchResult = forwardRef((props, ref) => {
     GETDATA();
   }, [API_KEY]);
 
+  // APISSSS API
   const fetchMovies = async (genre) => {
     let url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}`;
     let url2 = `https://api.themoviedb.org/3/discover/tv?api_key=${API_KEY}`;
