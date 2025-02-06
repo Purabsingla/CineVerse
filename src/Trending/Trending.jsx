@@ -23,13 +23,6 @@ const Trending = forwardRef((props, ref) => {
     }
   };
 
-  const [forceRender, setForceRender] = useState(false);
-  useEffect(() => {
-    setTimeout(() => {
-      setForceRender(true);
-    }, 100); // Small delay to trigger re-render
-  }, []);
-
   useEffect(() => {
     fetch(url)
       .then((response) => response.json())
@@ -56,11 +49,7 @@ const Trending = forwardRef((props, ref) => {
       </div>
 
       <div className="px-2 sm:px-4 md:px-8 lg:px-12">
-        <Card
-          MetaData={data}
-          HandleNavigate={HandleNavigate}
-          forceRender={forceRender}
-        />
+        <Card MetaData={data} HandleNavigate={HandleNavigate} />
       </div>
     </div>
   );
@@ -68,7 +57,7 @@ const Trending = forwardRef((props, ref) => {
 
 export default Trending;
 
-const Card = ({ MetaData, HandleNavigate, forceRender }) => {
+const Card = ({ MetaData, HandleNavigate }) => {
   const settings = {
     dots: true,
     infinite: false,
@@ -118,37 +107,35 @@ const Card = ({ MetaData, HandleNavigate, forceRender }) => {
 
   return (
     <div className="relative overflow-hidden">
-      {forceRender && (
-        <Slider {...settings}>
-          {MetaData &&
-            MetaData.map((item) => (
-              <div
-                key={item.id}
-                className="text-white cursor-pointer overflow-hidden shadow-lg hover:shadow-[0_10px_30px_rgba(0,255,255,1)] hover:scale-105 transition-transform duration-300 ease-in-out min-w-[200px] h-auto relative my-[5rem]"
-                onClick={() => {
-                  HandleNavigate(item);
-                }}
-              >
-                {/* Gradient Overlay for Entire Card */}
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black opacity-80"></div>
+      <Slider {...settings}>
+        {MetaData &&
+          MetaData.map((item) => (
+            <div
+              key={item.id}
+              className="text-white cursor-pointer overflow-hidden shadow-lg hover:shadow-[0_10px_30px_rgba(0,255,255,1)] hover:scale-105 transition-transform duration-300 ease-in-out min-w-[200px] h-auto relative my-[5rem]"
+              onClick={() => {
+                HandleNavigate(item);
+              }}
+            >
+              {/* Gradient Overlay for Entire Card */}
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black opacity-80"></div>
 
-                {/* Movie Image */}
-                <img
-                  src={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
-                  alt={item.title}
-                  className="w-full h-full object-cover"
-                />
+              {/* Movie Image */}
+              <img
+                src={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
+                alt={item.title}
+                className="w-full h-full object-cover"
+              />
 
-                {/* Text Content */}
-                <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black to-transparent">
-                  <h3 className="text-lg font-bold mb-2 text-white drop-shadow-md">
-                    {item.title}
-                  </h3>
-                </div>
+              {/* Text Content */}
+              <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black to-transparent">
+                <h3 className="text-lg font-bold mb-2 text-white drop-shadow-md">
+                  {item.title}
+                </h3>
               </div>
-            ))}
-        </Slider>
-      )}
+            </div>
+          ))}
+      </Slider>
     </div>
   );
 };
