@@ -13,8 +13,6 @@ function App() {
   }, []);
   return (
     <div className="App">
-      {/*  */}
-
       <HashRouter>
         <Suspense fallback={<Loader />}>
           <Routes>

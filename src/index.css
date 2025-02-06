@@ -13,3 +13,8 @@
 .slick-slide > div {
   padding: 0 10px;
 }
+
+.slick-slider {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
