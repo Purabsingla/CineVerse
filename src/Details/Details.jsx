@@ -176,29 +176,29 @@ const Details = ({ type }) => {
       <div className="bg-deep-space text-white min-h-screen">
         {/* Backdrop Section */}
         <div
-          className="relative h-[30rem] w-full bg-cover bg-center"
+          className="relative h-[34rem] w-full bg-cover bg-center"
           style={{
             backgroundImage: `url(https://image.tmdb.org/t/p/original${
               data && data.backdrop_path
             })`,
           }}
         >
-          <div className="absolute inset-0 bg-black bg-opacity-50"></div>
-          <div className="absolute bottom-10 left-10 flex items-center space-x-4">
+          <div className="absolute inset-0 bg-gradient-to-tr from-black to-transparent bg-opacity-50"></div>
+          <div className="absolute bottom-10 left-6 flex items-center space-x-4 sm:bottom-12 sm:left-12 lg:bottom-16 lg:left-16">
             <img
               src={`https://image.tmdb.org/t/p/w500${data && data.poster_path}`}
               alt={data && data.title}
-              className="w-36 rounded-lg shadow-lg"
+              className="w-24 sm:w-32 lg:w-36 rounded-lg shadow-lg"
             />
             <div>
-              <h1 className="text-4xl font-bold">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
                 {data && (data.title || data.name)}
               </h1>
-              <p className="text-lg text-gray-100 mt-2">
+              <p className="text-sm sm:text-base lg:text-lg text-gray-100 mt-1">
                 {data && (data.release_date || data.last_air_date)}
               </p>
-              <p className="text-lg text-gray-100 mt-2">
-                Original {type === "movie" ? "Title" : "Name"} :-{" "}
+              <p className="text-sm sm:text-base lg:text-lg text-gray-100 mt-1">
+                Original {type === "movie" ? "Title" : "Name"}:{" "}
                 {data && (data.original_name || data.original_title)}
               </p>
             </div>
