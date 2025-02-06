@@ -176,7 +176,7 @@ const Details = ({ type }) => {
       <div className="bg-deep-space text-white min-h-screen">
         {/* Backdrop Section */}
         <div
-          className="relative h-[34rem] w-full bg-cover bg-center"
+          className="relative h-[35rem] w-full bg-cover bg-center"
           style={{
             backgroundImage: `url(https://image.tmdb.org/t/p/original${
               data && data.backdrop_path
