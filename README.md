@@ -45,6 +45,9 @@ CineVerse is a sleek and user-friendly platform that allows users to discover, s
  - [TMDb API](https://www.themoviedb.org/documentation/api) for providing comprehensive movie and TV show data. <!-- TODO: Confirm if TMDb API is used -->
  - [React](https://react.dev/) and [Tailwind CSS](https://tailwindcss.com/) for the robust frontend development tools.
 
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 
 
