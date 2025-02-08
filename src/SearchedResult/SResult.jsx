@@ -104,7 +104,7 @@ const SearcedResulttt = () => {
             data.slice(0, displayCount).map((item) => (
               <div
                 key={item.id}
-                className="text-white cursor-pointer overflow-hidden rounded-lg shadow-lg hover:shadow-[0_10px_30px_rgba(0,255,255,1)] hover:scale-105 transition-transform duration-300 ease-in-out w-[200px] h-[300px] relative flex-shrink-0 mx-[1.5rem] my-[3rem]"
+                className="text-white cursor-pointer overflow-hidden rounded-lg shadow-lg hover:shadow-[0_10px_30px_rgba(0,255,255,1)] hover:scale-105 transition-transform duration-300 ease-in-out w-[200px] h-[300px] relative flex-shrink-0 mx-[0.3rem] my-[3rem]"
                 onClick={() => HandleClick(item)}
               >
                 {/* Gradient Overlay for Better Visibility */}

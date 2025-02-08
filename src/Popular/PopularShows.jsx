@@ -60,11 +60,10 @@ export default PopularShows;
 
 const Card = ({ MetaData, HandleNavigate }) => {
   const settings = {
-    dots: true,
-    infinite: false,
+    infinite: true,
     speed: 500,
     slidesToShow: 5,
-    slidesToScroll: 3,
+    slidesToScroll: 1,
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
     responsive: [
@@ -72,21 +71,21 @@ const Card = ({ MetaData, HandleNavigate }) => {
         breakpoint: 1536, // 2xl
         settings: {
           slidesToShow: 5,
-          slidesToScroll: 3,
+          slidesToScroll: 1,
         },
       },
       {
         breakpoint: 1280, // xl
         settings: {
           slidesToShow: 4,
-          slidesToScroll: 2,
+          slidesToScroll: 1,
         },
       },
       {
         breakpoint: 1024, // lg
         settings: {
           slidesToShow: 3,
-          slidesToScroll: 2,
+          slidesToScroll: 1,
         },
       },
       {
@@ -94,6 +93,7 @@ const Card = ({ MetaData, HandleNavigate }) => {
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
+          initialSlide: 0,
         },
       },
       {
@@ -101,13 +101,22 @@ const Card = ({ MetaData, HandleNavigate }) => {
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
+          initialSlide: 0,
         },
       },
     ],
   };
 
+  const [key, setKey] = useState(0); // Force re-render on resize
+
+  useEffect(() => {
+    const updateKey = () => setKey((prev) => prev + 1); // Change key to force re-render
+    window.addEventListener("resize", updateKey);
+    return () => window.removeEventListener("resize", updateKey);
+  }, []);
+
   return (
-    <div className="relative overflow-hidden">
+    <div key={key} className="relative overflow-hidden">
       <Slider {...settings}>
         {MetaData &&
           MetaData.map((item) => (
