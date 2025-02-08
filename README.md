@@ -20,17 +20,23 @@ CineVerse is a sleek and user-friendly platform that allows users to discover, s
 ## Installation
 
 1. **Clone the Repository**:
+   
    ```bash
    git clone https://github.com/yourusername/CineVerse.git
    cd CineVerse
+
 2. **Install Dependencies**:
+
    ```bash
    npm start
+
 3. **Obtain API Keys**:
     - Register at TMDb to get your API key. <!-- TODO: Confirm if TMDb API is used -->
     - Confirm a `.env` file in the root directory and add your api key.
-        ```env
+      
+        ```bash
           REACT_APP_TMDB_API_KEY=your_api_key_here
+
 4. **Start The Application**
     ```bash
       npm start
