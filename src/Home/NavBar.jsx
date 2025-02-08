@@ -48,6 +48,9 @@ const NavBar = ({ sectionRef, trendingRef, popularRef, genreRef }) => {
   const HandleKeyPress = (e) => {
     if (e.key === "Enter") {
       handleSearch();
+      if (isMobileMenuOpen) {
+        setIsMobileMenuOpen(!isMobileMenuOpen);
+      }
     }
   };
 
@@ -67,7 +70,9 @@ const NavBar = ({ sectionRef, trendingRef, popularRef, genreRef }) => {
             CineVerse
           </span>
         </p>
-        <div className="flex items-center md:order-2">
+
+        {/* Search Bar And Hamburger Button */}
+        <div className=" md:order-2">
           {/* Search Bar for Desktop */}
           <div className="relative hidden md:block group">
             <input
@@ -94,21 +99,22 @@ const NavBar = ({ sectionRef, trendingRef, popularRef, genreRef }) => {
                 />
               </svg>
             </div>
+            <div className="absolute top-0 left-[13rem]">
+              <button
+                className="ml-1 p-2 text-base font-medium bg-[#00FFFF] text-white rounded-lg transition-colors hover:bg-[#00BFFF]"
+                onClick={handleSearch}
+              >
+                Search
+              </button>
+            </div>
           </div>
-
-          <button
-            className=" ml-1  p-2 text-base font-medium bg-[#00FFFF] text-white rounded-lg transition-colors hover:bg-[#00BFFF]"
-            onClick={handleSearch}
-          >
-            Search
-          </button>
 
           {/* Hamburger Button for Mobile */}
           <button
             data-collapse-toggle="navbar-search"
             type="button"
             onClick={toggleMenu}
-            className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+            className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden  focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
             aria-controls="navbar-search"
             aria-expanded={isMobileMenuOpen ? "true" : "false"}
           >
@@ -133,12 +139,16 @@ const NavBar = ({ sectionRef, trendingRef, popularRef, genreRef }) => {
           id="navbar-search"
         >
           {/* Search Bar for Mobile */}
-          <div className="relative md:hidden mt-12 mb-4 transition-colors hover:border hover:border-[#00FFFF]">
+          <div className="relative md:hidden mt-12 mb-4 transition-colors ">
             <input
               type="text"
               id="search-mobile"
-              className="block w-full p-2 ps-10 text-sm  border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className="block w-[84%] border rounded-md  transition-colors  hover:border hover:border-[#00FFFF] p-2 ps-10 text-sm border-gray-300  bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="Search..."
+              onChange={(e) => {
+                setSearch(e.target.value);
+              }}
+              onKeyPress={HandleKeyPress}
             />
             <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
               <svg
@@ -154,13 +164,21 @@ const NavBar = ({ sectionRef, trendingRef, popularRef, genreRef }) => {
                 />
               </svg>
             </div>
+            <div className="absolute top-[-0.1rem] left-[24rem]">
+              <button
+                className="p-2 text-base font-medium bg-[#00FFFF] text-white rounded-lg transition-colors hover:bg-[#00BFFF]"
+                onClick={handleSearch}
+              >
+                Search
+              </button>
+            </div>
           </div>
 
           {/* Navbar Links */}
           <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg backdrop-blur-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 cursor-pointer">
             <li onClick={handleScrollToHome}>
               <p
-                className="block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:p-0 transition-colors hover:text-[#00FFFF]"
+                className="block py-2 px-3 hover:bg-gray-700 text-white rounded-sm md:bg-transparent md:p-0 transition-colors hover:text-[#00FFFF]"
                 aria-current="page"
               >
                 Home
@@ -168,19 +186,19 @@ const NavBar = ({ sectionRef, trendingRef, popularRef, genreRef }) => {
             </li>
             <li onClick={handleScrollToTrending}>
               <p
-                className="block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:p-0 transition-colors hover:text-[#00FFFF]"
+                className="block py-2 px-3 hover:bg-gray-700 text-white rounded-sm md:bg-transparent md:p-0 transition-colors hover:text-[#00FFFF]"
                 aria-current="page"
               >
                 Trending
               </p>
             </li>
             <li onClick={handleScrollToPopular}>
-              <p className="block py-2 px-3  rounded-sm hover:bg-gray-100 md:hover:bg-transparent transition-colors hover:text-[#00FFFF] md:p-0 dark:text-white dark:hover:bg-gray-700  md:dark:hover:bg-transparent dark:border-gray-700">
+              <p className="block py-2 px-3 rounded-sm hover:bg-gray-700  md:hover:bg-transparent transition-colors hover:text-[#00FFFF] md:p-0 text-white">
                 Popular
               </p>
             </li>
             <li onClick={handleScrollTogenre}>
-              <p className="block py-2 px-3  rounded-sm hover:bg-gray-100 md:hover:bg-transparent transition-colors hover:text-[#00FFFF] md:p-0 dark:text-white  dark:hover:bg-gray-700 md:dark:hover:bg-transparent dark:border-gray-700">
+              <p className="block py-2 px-3  rounded-sm  md:hover:bg-transparent transition-colors hover:text-[#00FFFF] md:p-0 dark:text-white  dark:hover:bg-gray-700 md:dark:hover:bg-transparent dark:border-gray-700">
                 Genre
               </p>
             </li>
