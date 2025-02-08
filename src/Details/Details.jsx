@@ -207,7 +207,7 @@ const Details = ({ type }) => {
         </div>
 
         {/* Details Section */}
-        <div className="px-10 py-8">
+        <div className="px-6 py-8">
           <h2 className="text-5xl font-bold mb-4">Overview</h2>
           <p className="text-gray-300 mb-6">{data && data.overview}</p>
 
@@ -375,7 +375,7 @@ const Details = ({ type }) => {
               similarMovies.map((item) => (
                 <div
                   key={item.id}
-                  className="text-white cursor-pointer overflow-hidden rounded-lg shadow-lg hover:shadow-[0_10px_30px_rgba(0,255,255,1)] hover:scale-105 transition-transform duration-300 ease-in-out w-[200px] h-[300px] relative flex-shrink-0 mx-[1.5rem] my-[3rem]"
+                  className="text-white cursor-pointer overflow-hidden rounded-lg shadow-lg hover:shadow-[0_10px_30px_rgba(0,255,255,1)] hover:scale-105 transition-transform duration-300 ease-in-out w-[200px] h-[300px] relative flex-shrink-0 mx-[0.5rem] my-[2.1rem]"
                   onClick={() => HandleClick(item)}
                 >
                   {/* Gradient Overlay for Better Visibility */}
