@@ -31,7 +31,7 @@ CineVerse is a sleek and user-friendly platform that allows users to discover, s
    npm start
 
 3. **Obtain API Keys**:
-    - Register at TMDb to get your API key. <!-- TODO: Confirm if TMDb API is used -->
+    - Register at [TMDb](https://www.themoviedb.org/) to get your API key. <!-- TODO: Confirm if TMDb API is used -->
     - Confirm a `.env` file in the root directory and add your api key.
       
         ```bash
