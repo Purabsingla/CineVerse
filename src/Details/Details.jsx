@@ -58,13 +58,14 @@ const Details = ({ type }) => {
       fetch(url)
         .then((response) => response.json())
         .then((data) => {
+          console.log(data);
           const formatDates = (item) => ({
             ...item,
             release_date: item.release_date
               ? formatDate(item.release_date)
               : undefined,
-            last_air_date: item.last_air_date
-              ? formatDate(item.last_air_date)
+            first_air_date: item.first_air_date
+              ? formatDate(item.first_air_date)
               : undefined,
           });
 
@@ -195,7 +196,7 @@ const Details = ({ type }) => {
                 {data && (data.title || data.name)}
               </h1>
               <p className="text-sm sm:text-base lg:text-lg text-gray-100 mt-1">
-                {data && (data.release_date || data.last_air_date)}
+                {data && (data.release_date || data.first_air_date)}
               </p>
               <p className="text-sm sm:text-base lg:text-lg text-gray-100 mt-1">
                 Original {type === "movie" ? "Title" : "Name"}:{" "}
@@ -248,6 +249,22 @@ const Details = ({ type }) => {
               <p className="font-bold">Rating</p>
               <p>{data && data.vote_average}/10</p>
             </div>
+            {type === "tv" && (
+              <>
+                <div className="bg-gray-800 p-4 rounded-lg shadow-md">
+                  <p className="font-bold">Number of Seasons</p>
+                  <p>{data && data.number_of_seasons}</p>
+                </div>
+                <div className="bg-gray-800 p-4 rounded-lg shadow-md">
+                  <p className="font-bold">Number of Episodes</p>
+                  <p>{data && data.number_of_episodes}</p>
+                </div>
+                <div className="bg-gray-800 p-4 rounded-lg shadow-md">
+                  <p className="font-bold">In Production</p>
+                  <p>{data && (data.in_production ? "Yes" : "No")}</p>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Production Companies */}

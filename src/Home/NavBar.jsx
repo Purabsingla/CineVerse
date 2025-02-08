@@ -1,20 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { GiAlienEgg } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
 const NavBar = ({ sectionRef, trendingRef, popularRef, genreRef }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [randomBreakpoint, setRandomBreakpoint] = useState(768); // Default md:hidden (768px)
 
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const minWidth = 480; // Minimum width where button hides
-    const maxWidth = 1024; // Maximum width where button is forced visible
-    setRandomBreakpoint(
-      Math.floor(Math.random() * (maxWidth - minWidth) + minWidth)
-    );
-  }, []);
 
   const toggleMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
