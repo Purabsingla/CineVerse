@@ -98,7 +98,7 @@ const SearcedResulttt = () => {
           Results for: {formattedQuery}
         </h1>
       </div>
-      <div className="bg-deep-space w-full min-h-screen p-8">
+      <div className="bg-deep-space w-full min-h-screen py-8 ">
         <div className="flex flex-wrap justify-center">
           {data ? (
             data.slice(0, displayCount).map((item) => (

@@ -207,13 +207,13 @@ const Details = ({ type }) => {
         </div>
 
         {/* Details Section */}
-        <div className="px-6 py-8">
-          <h2 className="text-5xl font-bold mb-4">Overview</h2>
+        <div className="px-0 py-8">
+          <h2 className="text-5xl font-bold mb-4 ml-3">Overview</h2>
           <p className="text-gray-300 mb-6">{data && data.overview}</p>
 
           {youtubedata && (
             <div className="mb-10">
-              <h2 className="text-5xl font-bold mb-6">Watch Trailer</h2>
+              <h2 className="text-5xl font-bold mb-6 ml-3">Watch Trailer</h2>
               <div className="relative w-full md:w-3/4 lg:w-2/3 xl:w-1/2 2xl:w-1/2 mx-auto pb-[56.25%]  md:pb-[50%] lg:pb-[45%] xl:pb-[40%] 2xl:pb-[35%] h-0 my-7">
                 <iframe
                   src={`https://www.youtube.com/embed/${youtubedata}`}
@@ -227,9 +227,9 @@ const Details = ({ type }) => {
             </div>
           )}
 
-          <div className="flex flex-wrap items-center gap-6 mb-10">
+          <div className="flex flex-wrap items-center gap-6 mb-10 ml-3">
             <div className="bg-gray-800 p-4 rounded-lg shadow-md">
-              <p className="font-bold">Genres</p>
+              <p className="font-bold ">Genres</p>
 
               <span>
                 {data && data.genres.map((item) => item.name).join(", ")}
@@ -270,10 +270,10 @@ const Details = ({ type }) => {
           {/* Production Companies */}
           {data?.production_companies?.length > 0 && (
             <>
-              <h2 className="text-5xl font-bold mb-10 mt-10">
+              <h2 className="text-5xl font-bold mb-10 mt-10 ml-3">
                 Production Companies
               </h2>
-              <div className="flex flex-wrap gap-10">
+              <div className="flex flex-wrap gap-10 ml-3">
                 {data.production_companies.map((company) => (
                   <div key={company.name} className="text-center border-b">
                     {company.logo_path && (
@@ -292,39 +292,9 @@ const Details = ({ type }) => {
 
           {/* Available on OTT */}
           {ottLinks && (
-            <div className="my-10 ">
+            <div className="my-10 ml-3">
               <h2 className="text-5xl font-bold mb-6">Available on</h2>
               <div className="flex flex-wrap gap-6">
-                {/* Loop through buy, flatrate, and rent */}
-                {/* {["buy", "flatrate", "rent"].map(
-                  (type) =>
-                    ottLinks[type] &&
-                    ottLinks[type].map((provider) => (
-                      <div
-                        key={provider.provider_id}
-                        className="text-center bg-gray-800 p-4 rounded-lg shadow-md"
-                      >
-                        {provider.logo_path && (
-                          <a
-                            href={ottLinks.link} // Global link for the OTT platform
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block"
-                          >
-                            <img
-                              src={`https://image.tmdb.org/t/p/w200${provider.logo_path}`}
-                              alt={provider.provider_name}
-                              className="h-16 mx-auto"
-                            />
-                          </a>
-                        )}
-                        <p className="mt-2">{provider.provider_name}</p>
-                        <p className="text-gray-400 text-sm capitalize">
-                          ({type})
-                        </p>
-                      </div>
-                    ))
-                )} */}
                 {["buy", "flatrate", "rent"].some(
                   (type) => ottLinks[type]?.length
                 ) ? (
@@ -367,7 +337,7 @@ const Details = ({ type }) => {
           )}
 
           {/* SImilar Movies */}
-          <h2 className="text-5xl font-bold mt-10 mb-6">
+          <h2 className="text-5xl font-bold mt-10 mb-6 ml-3">
             Similar {type === "movie" ? "Movies" : "TV Shows"}
           </h2>
           <div className="flex flex-wrap justify-center ">
