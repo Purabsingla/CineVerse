@@ -68,7 +68,7 @@ const NavBar = ({ sectionRef, trendingRef, popularRef, genreRef }) => {
       <div className="max-w-[1300px] flex flex-wrap items-center justify-between mx-auto p-4">
         <p className="flex items-center space-x-3 rtl:space-x-reverse cursor-default">
           <GiAlienEgg className="h-8 w-8 text-white" />
-          <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
+          <span className="self-center text-2xl font-semibold whitespace-nowrap text-white">
             CineVerse
           </span>
         </p>
@@ -207,7 +207,7 @@ const NavBar = ({ sectionRef, trendingRef, popularRef, genreRef }) => {
               </p>
             </li>
             <li onClick={handleScrollTogenre}>
-              <p className="block py-2 px-3  rounded-sm  md:hover:bg-transparent transition-colors hover:text-[#00FFFF] md:p-0 dark:text-white  dark:hover:bg-gray-700 md:dark:hover:bg-transparent dark:border-gray-700">
+              <p className="block py-2 px-3  rounded-sm  md:hover:bg-transparent transition-colors hover:text-[#00FFFF] md:p-0 text-white hover:bg-gray-700">
                 Genre
               </p>
             </li>
