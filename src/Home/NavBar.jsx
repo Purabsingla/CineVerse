@@ -1,10 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { GiAlienEgg } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
 const NavBar = ({ sectionRef, trendingRef, popularRef, genreRef }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [randomBreakpoint, setRandomBreakpoint] = useState(768); // Default md:hidden (768px)
+
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const minWidth = 480; // Minimum width where button hides
+    const maxWidth = 1024; // Maximum width where button is forced visible
+    setRandomBreakpoint(
+      Math.floor(Math.random() * (maxWidth - minWidth) + minWidth)
+    );
+  }, []);
+
   const toggleMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
@@ -63,7 +74,7 @@ const NavBar = ({ sectionRef, trendingRef, popularRef, genreRef }) => {
 
   return (
     <nav className="backdrop-blur-lg fixed top-0 z-20 start-0 w-full">
-      <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+      <div className="max-w-[1300px] flex flex-wrap items-center justify-between mx-auto p-4">
         <p className="flex items-center space-x-3 rtl:space-x-reverse cursor-default">
           <GiAlienEgg className="h-8 w-8 text-white" />
           <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
@@ -72,41 +83,44 @@ const NavBar = ({ sectionRef, trendingRef, popularRef, genreRef }) => {
         </p>
 
         {/* Search Bar And Hamburger Button */}
-        <div className=" md:order-2">
+        <div className="md:order-2">
           {/* Search Bar for Desktop */}
-          <div className="relative hidden md:block group">
-            <input
-              type="text"
-              id="search-desktop"
-              className="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 placeholder-gray-500 transition-colors focus:ring-[#00FFFF] focus:border-[#00FFFF] focus:placeholder-[#00FFFF] focus:text-[#00FFFF] dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-[#00FFFF] dark:focus:border-[#00FFFF]"
-              placeholder="Search..."
-              onChange={(e) => {
-                setSearch(e.target.value);
-              }}
-              onKeyPress={HandleKeyPress}
-            />
-            <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-              <svg
-                className="w-4 h-4 text-gray-500 dark:text-gray-400 font-extrabold transition-colors group-hover:text-[#00FFFF] group-focus-within:text-[#00FFFF]"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 20 20"
-                aria-hidden="true"
-              >
-                <path
-                  stroke="currentColor"
-                  d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                />
-              </svg>
+          {/* Desktop Search Bar */}
+          <div className="relative hidden md:flex items-center gap-2">
+            <div className="relative flex-1">
+              <input
+                type="text"
+                id="search-desktop"
+                className="block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 placeholder-gray-500 transition-colors focus:ring-[#00FFFF] focus:border-[#00FFFF] focus:placeholder-[#00FFFF] focus:text-[#00FFFF] dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-[#00FFFF] dark:focus:border-[#00FFFF]"
+                placeholder="Search..."
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                }}
+                onKeyPress={HandleKeyPress}
+              />
+              <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                <svg
+                  className="w-4 h-4 text-gray-500 dark:text-gray-400 font-extrabold transition-colors group-hover:text-[#00FFFF] group-focus-within:text-[#00FFFF]"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 20 20"
+                  aria-hidden="true"
+                >
+                  <path
+                    stroke="currentColor"
+                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                  />
+                </svg>
+              </div>
             </div>
-            <div className="absolute top-0 left-[13rem]">
-              <button
-                className="ml-1 p-2 text-base font-medium bg-[#00FFFF] text-white rounded-lg transition-colors hover:bg-[#00BFFF]"
-                onClick={handleSearch}
-              >
-                Search
-              </button>
-            </div>
+
+            {/* Search Button - Positioned Next to Input */}
+            <button
+              className="p-2 text-base font-medium bg-[#00FFFF] text-white rounded-lg transition-colors hover:bg-[#00BFFF]"
+              onClick={handleSearch}
+            >
+              Search
+            </button>
           </div>
 
           {/* Hamburger Button for Mobile */}
@@ -114,7 +128,7 @@ const NavBar = ({ sectionRef, trendingRef, popularRef, genreRef }) => {
             data-collapse-toggle="navbar-search"
             type="button"
             onClick={toggleMenu}
-            className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden  focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+            className="inline-flex items-center p-2 w-10 h-10 border justify-center text-sm text-gray-500 rounded-lg md:hidden  focus:outline-none focus:ring-2 transition-all hover:bg-[#00FFFF] hover:text-black focus:ring-gray-600"
             aria-controls="navbar-search"
             aria-expanded={isMobileMenuOpen ? "true" : "false"}
           >
@@ -139,39 +153,43 @@ const NavBar = ({ sectionRef, trendingRef, popularRef, genreRef }) => {
           id="navbar-search"
         >
           {/* Search Bar for Mobile */}
-          <div className="relative md:hidden mt-12 mb-4 transition-colors ">
-            <input
-              type="text"
-              id="search-mobile"
-              className="block w-[84%] border rounded-md  transition-colors  hover:border hover:border-[#00FFFF] p-2 ps-10 text-sm border-gray-300  bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Search..."
-              onChange={(e) => {
-                setSearch(e.target.value);
-              }}
-              onKeyPress={HandleKeyPress}
-            />
-            <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-              <svg
-                className="w-4 h-4 text-gray-500 dark:text-gray-400"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  stroke="currentColor"
-                  d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                />
-              </svg>
+          <div className="relative md:hidden mt-12 mb-4 flex items-center gap-2 transition-colors">
+            {/* Search Input */}
+            <div className="relative flex-1">
+              <input
+                type="text"
+                id="search-mobile"
+                className="block w-full border rounded-md transition-colors hover:border hover:border-[#00FFFF] p-2 ps-10 text-sm border-gray-300 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="Search..."
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                }}
+                onKeyPress={HandleKeyPress}
+              />
+              {/* Search Icon */}
+              <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                <svg
+                  className="w-4 h-4 text-gray-500 dark:text-gray-400"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    stroke="currentColor"
+                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                  />
+                </svg>
+              </div>
             </div>
-            <div className="absolute top-[-0.1rem] left-[24rem]">
-              <button
-                className="p-2 text-base font-medium bg-[#00FFFF] text-white rounded-lg transition-colors hover:bg-[#00BFFF]"
-                onClick={handleSearch}
-              >
-                Search
-              </button>
-            </div>
+
+            {/* Search Button */}
+            <button
+              className="p-2 text-base font-medium bg-[#00FFFF] text-white rounded-lg transition-colors hover:bg-[#00BFFF]"
+              onClick={handleSearch}
+            >
+              Search
+            </button>
           </div>
 
           {/* Navbar Links */}
