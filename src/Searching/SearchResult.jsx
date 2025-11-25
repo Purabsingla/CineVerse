@@ -1,249 +1,250 @@
-import { forwardRef, useEffect, useState, useRef } from "react";
-import { Meta, useNavigate } from "react-router-dom";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import Loader from "../Loader/Loader";
+import React, { forwardRef, useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { ChevronLeft, ChevronRight, Clapperboard, Filter } from "lucide-react";
+
+// Loader Component (In case internal loader is needed)
+const SimpleLoader = () => (
+  <div className="flex justify-center items-center h-64 w-full">
+    <div className="relative w-16 h-16">
+      <div className="absolute inset-0 border-4 border-cyan-500/30 rounded-full"></div>
+      <div className="absolute inset-0 border-4 border-cyan-400 rounded-full border-t-transparent animate-spin"></div>
+    </div>
+  </div>
+);
 
 const SearchResult = forwardRef((props, ref) => {
-  const API_KEY = String(process.env.REACT_APP_API_KEY).trim();
-  const [genre, setGenre] = useState(null);
-  const [genreValue, setGenreValue] = useState("1");
-  const [Data, getData] = useState([]);
+  const navigate = useNavigate();
+  const API_KEY = String(process.env.REACT_APP_API_KEY || "").trim();
+
+  const [genres, setGenres] = useState([]);
+  const [selectedGenre, setSelectedGenre] = useState("1");
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // --- Fetch Genres ---
   useEffect(() => {
-    async function GETDATA() {
-      await fetch(
-        `https://api.themoviedb.org/3/genre/tv/list?api_key=${API_KEY}&language=en-US`
-      )
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data);
-          setGenre(
-            data.genres.filter(
-              (genre) =>
-                genre.name !== "Action & Adventure" &&
-                genre.name !== "Sci-Fi & Fantasy"
+    if (!API_KEY) return;
+
+    const fetchGenres = async () => {
+      try {
+        const response = await fetch(
+          `https://api.themoviedb.org/3/genre/tv/list?api_key=${API_KEY}&language=en-US`
+        );
+        const resData = await response.json();
+        if (resData.genres) {
+          setGenres(
+            resData.genres.filter(
+              (g) =>
+                g.name !== "Action & Adventure" && g.name !== "Sci-Fi & Fantasy"
             )
           );
-        })
-        .catch((err) => console.error(err));
-    }
-    GETDATA();
+        }
+      } catch (err) {
+        console.error("Genre Fetch Error:", err);
+      }
+    };
+    fetchGenres();
   }, [API_KEY]);
 
-  // APISSSS API
-  const fetchMovies = async (genre) => {
-    let url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}`;
-    let url2 = `https://api.themoviedb.org/3/discover/tv?api_key=${API_KEY}`;
-
-    if (genre !== "1") {
-      url += `&with_genres=${genre}`;
-      url2 += `&with_genres=${genre}`;
-    }
-
-    console.log(url);
-
-    await Promise.all([
-      fetch(url).then((res) => res.json()),
-      fetch(url2).then((res) => res.json()),
-    ])
-      .then(([data1, data2]) => {
-        console.log(data2.results, data1.results);
-        let combinedData = [...data1.results, ...data2.results]; // Merging both results
-
-        // Shuffle the array
-        combinedData = combinedData.sort(() => Math.random() - 0.5);
-
-        getData(combinedData);
-        console.log("Data Stored");
-      })
-      .catch((err) => console.error(err));
-  };
-
-  // Fetch movies when genreValue changes
+  // --- Fetch Movies/TV based on Genre ---
   useEffect(() => {
-    fetchMovies(genreValue);
-  }, [genreValue]);
+    if (!API_KEY) return;
+
+    const fetchData = async () => {
+      setLoading(true);
+      let urlMovie = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}`;
+      let urlTV = `https://api.themoviedb.org/3/discover/tv?api_key=${API_KEY}`;
+
+      if (selectedGenre !== "1") {
+        urlMovie += `&with_genres=${selectedGenre}`;
+        urlTV += `&with_genres=${selectedGenre}`;
+      }
+
+      try {
+        const [resMovie, resTV] = await Promise.all([
+          fetch(urlMovie).then((res) => res.json()),
+          fetch(urlTV).then((res) => res.json()),
+        ]);
+
+        let combined = [...(resMovie.results || []), ...(resTV.results || [])];
+
+        // Shuffle the results for variety
+        combined = combined.sort(() => Math.random() - 0.5);
+        setData(combined);
+      } catch (err) {
+        console.error("Data Fetch Error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [selectedGenre, API_KEY]);
 
   return (
-    <>
-      <div className="pt-8 pb-16 bg-deep-space bg-opacity-80" ref={ref}>
-        {/* Heading Section */}
-        <div className="py-8">
-          <div
-            className="text-center py-6"
-            style={{
-              background: "radial-gradient(circle, #001f3f, black)",
-            }}
-          >
-            <h1 className="text-3xl font-bold text-white drop-shadow-lg">
+    <section
+      ref={ref}
+      className="relative py-20 bg-[#050505] min-h-[80vh] overflow-hidden"
+    >
+      {/* Ambient Background Effects */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-900/10 blur-[100px] rounded-full pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-cyan-900/10 blur-[100px] rounded-full pointer-events-none"></div>
+
+      <div className="relative z-10 max-w-[1600px] mx-auto px-4 md:px-8">
+        {/* Header & Filter Section */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
+          {/* Title Area */}
+          <div className="pl-2 border-l-4 border-cyan-500">
+            <div className="flex items-center gap-3 mb-2">
+              <Clapperboard className="text-cyan-400 w-6 h-6" />
+              <span className="text-cyan-400 font-bold tracking-widest uppercase text-xs md:text-sm">
+                Discover Content
+              </span>
+            </div>
+            <h1 className="text-3xl md:text-5xl font-bold text-white uppercase tracking-tighter drop-shadow-lg">
               Movies By Genre
             </h1>
           </div>
+
+          {/* Stylish Genre Selector */}
+          <div className="flex items-center gap-4 bg-white/5 p-2 pr-6 rounded-full border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-colors group">
+            <div className="bg-gray-800 group-hover:bg-cyan-900 transition-colors p-2 rounded-full">
+              <Filter className="w-5 h-5 text-cyan-400" />
+            </div>
+            <div className="relative">
+              <select
+                className="bg-transparent text-white text-lg font-medium focus:outline-none cursor-pointer appearance-none pr-8 [&>option]:bg-gray-900 [&>option]:text-white"
+                value={selectedGenre}
+                onChange={(e) => setSelectedGenre(e.target.value)}
+              >
+                <option value="1">All Genres</option>
+                <option value="28">Action</option>
+                <option value="12">Adventure</option>
+                <option value="878">Sci-Fi</option>
+                <option value="14">Fantasy</option>
+                {genres.map((g) => (
+                  <option key={g.id} value={g.id}>
+                    {g.name}
+                  </option>
+                ))}
+              </select>
+              {/* Custom Arrow Icon */}
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none">
+                <ChevronLeft className="w-4 h-4 -rotate-90 text-gray-400 group-hover:text-cyan-400 transition-colors" />
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="flex ml-[3rem]  items-center space-x-4">
-          <label className="text-white text-lg">Select Genre:</label>
-          <select
-            className="p-3 rounded-md text-lg bg-gray-800 text-white border-2 border-transparent focus:outline-none focus:ring-4 focus:ring-[#00FFFF] hover:bg-gray-700 hover:ring-2 hover:ring-[#00FFFF] transition-all duration-300 "
-            onChange={(e) => {
-              console.log(e.target.value);
-              setGenreValue(e.target.value);
-            }}
-          >
-            <option value="1">All</option>
-            <option value="28">Action</option>
-            <option value="12">Adventure</option>
-            <option value="878">Sci-Fi</option>
-            <option value="14">Fantasy</option>
-            {genre &&
-              genre.map((item) => <option value={item.id}>{item.name}</option>)}
-            {/* Add other genres here */}
-          </select>
-        </div>
-        {/* Movie Cards */}
-        <div className="px-4 md:px-8 lg:px-12 ">
-          <Card MetaData={Data} />
-        </div>
+
+        {/* Content Area */}
+        {loading ? <SimpleLoader /> : <ResultCarousel data={data} />}
       </div>
-    </>
+    </section>
   );
 });
 
 export default SearchResult;
 
-const Card = ({ MetaData }) => {
-  const sliderRef = useRef(null);
+// --- Custom Carousel Component (Replaces Slick Slider) ---
+const ResultCarousel = ({ data }) => {
+  const scrollContainerRef = useRef(null);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    // When data changes, reset carousel to the starting point
-    if (sliderRef.current) {
-      sliderRef.current.slickGoTo(0);
-    }
-    console.log(Array.isArray(MetaData));
-  }, [MetaData]);
-
-  const naviagte = useNavigate();
-
-  const settings = {
-    infinite: true,
-    speed: 500,
-    slidesToShow: 5,
-    slidesToScroll: 1,
-    nextArrow: <NextArrow />,
-    prevArrow: <PrevArrow />,
-    responsive: [
-      {
-        breakpoint: 1536, // 2xl
-        settings: {
-          slidesToShow: 5,
-          slidesToScroll: 1,
-        },
-      },
-      {
-        breakpoint: 1280, // xl
-        settings: {
-          slidesToShow: 4,
-          slidesToScroll: 1,
-        },
-      },
-      {
-        breakpoint: 1024, // lg
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 1,
-        },
-      },
-      {
-        breakpoint: 768, // md
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-          initialSlide: 0,
-        },
-      },
-      {
-        breakpoint: 640, // sm
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-          initialSlide: 0,
-        },
-      },
-    ],
-  };
-
-  const HandleRouting = (Data) => {
-    if (Data.title) {
-      const query = Data.title.toLowerCase().replace(/\s+/g, "-");
-      naviagte(`/movie/${query}/${Data.id}`);
+  const handleRouting = (item) => {
+    if (item.title) {
+      const query = item.title.toLowerCase().replace(/\s+/g, "-");
+      navigate(`/movie/${query}/${item.id}`);
     } else {
-      const query = Data.name.toLowerCase().replace(/\s+/g, "-");
-      naviagte(`/tv/${query}/${Data.id}`);
+      const query = (item.name || "show").toLowerCase().replace(/\s+/g, "-");
+      navigate(`/tv/${query}/${item.id}`);
     }
   };
 
-  const [key, setKey] = useState(0); // Force re-render on resize
+  const scroll = (direction) => {
+    if (scrollContainerRef.current) {
+      const { current } = scrollContainerRef;
+      const scrollAmount = direction === "left" ? -350 : 350;
+      current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+    }
+  };
 
-  useEffect(() => {
-    const updateKey = () => setKey((prev) => prev + 1); // Change key to force re-render
-    window.addEventListener("resize", updateKey);
-    return () => window.removeEventListener("resize", updateKey);
-  }, []);
+  if (!data || data.length === 0) {
+    return (
+      <div className="text-white/50 text-center py-10 text-xl">
+        No results found for this genre.
+      </div>
+    );
+  }
 
   return (
-    <div key={key} className="relative overflow-hidden">
-      <Slider ref={sliderRef} {...settings}>
-        {Array.isArray(MetaData) && MetaData ? (
-          MetaData.map((item) => (
-            <div
-              key={item.id}
-              className="text-white cursor-pointer overflow-hidden shadow-lg hover:shadow-[0_10px_30px_rgba(0,255,255,1)] hover:scale-105 transition-transform duration-300 ease-in-out min-w-[200px] 2xl:h-[25rem] xl:h-[25rem]  lg:h-[25rem] md:h-[27rem] sm:h-[30rem] relative my-[5rem]"
-              onClick={() => {
-                HandleRouting(item);
-              }}
-            >
-              {/* Gradient Overlay for Entire Card */}
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black opacity-80"></div>
+    <div className="relative group/carousel">
+      {/* Navigation Buttons (Hidden by default, shown on hover) */}
+      <button
+        onClick={() => scroll("left")}
+        className="absolute left-0 top-1/2 -translate-y-1/2 z-20 p-4 bg-black/60 backdrop-blur-md border border-white/10 rounded-full text-white opacity-0 group-hover/carousel:opacity-100 hover:bg-cyan-500 hover:text-black transition-all duration-300 -translate-x-2 md:-translate-x-8 disabled:opacity-0"
+      >
+        <ChevronLeft className="w-6 h-6" />
+      </button>
 
-              {/* Movie Image */}
+      <button
+        onClick={() => scroll("right")}
+        className="absolute right-0 top-1/2 -translate-y-1/2 z-20 p-4 bg-black/60 backdrop-blur-md border border-white/10 rounded-full text-white opacity-0 group-hover/carousel:opacity-100 hover:bg-cyan-500 hover:text-black transition-all duration-300 translate-x-2 md:translate-x-8"
+      >
+        <ChevronRight className="w-6 h-6" />
+      </button>
+
+      {/* Scroll Container */}
+      <div
+        ref={scrollContainerRef}
+        className="flex gap-6 overflow-x-auto scroll-smooth pb-12 pt-4 no-scrollbar snap-x snap-mandatory px-2"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+      >
+        {data.map((item) => (
+          <div
+            key={`${item.id}-${item.title || item.name}`}
+            className="flex-none w-[160px] sm:w-[200px] md:w-[240px] lg:w-[260px] snap-start perspective-1000"
+          >
+            <div
+              onClick={() => handleRouting(item)}
+              className="group relative aspect-[2/3] rounded-xl overflow-hidden bg-gray-900 cursor-pointer transition-all duration-500 hover:-translate-y-3 shadow-lg hover:shadow-[0_0_25px_rgba(6,182,212,0.4)] border border-white/5 hover:border-cyan-400/50"
+            >
+              {/* Poster Image */}
               <img
-                src={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
+                src={
+                  item.poster_path
+                    ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
+                    : "https://via.placeholder.com/500x750/111827/ffffff?text=No+Image"
+                }
                 alt={item.title || item.name}
-                className="w-full h-full object-cover"
+                loading="lazy"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
 
-              {/* Text Content */}
-              <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black to-transparent">
-                <h3 className="text-lg font-bold mb-2 text-white drop-shadow-md">
+              {/* Overlay Gradient */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-60 group-hover:opacity-90 transition-opacity duration-300" />
+
+              {/* Hover Glow Border */}
+              <div className="absolute inset-0 border-2 border-transparent group-hover:border-cyan-400/30 rounded-xl transition-colors duration-500 pointer-events-none"></div>
+
+              {/* Content Info */}
+              <div className="absolute bottom-0 left-0 w-full p-5 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                <h3 className="text-white font-bold text-sm md:text-lg leading-tight drop-shadow-md line-clamp-2 group-hover:text-cyan-400 transition-colors">
                   {item.title || item.name}
                 </h3>
+
+                <div className="flex items-center gap-3 mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
+                  <span className="text-[10px] md:text-xs font-bold bg-cyan-500 text-black px-2 py-0.5 rounded">
+                    {item.vote_average ? item.vote_average.toFixed(1) : "NR"}
+                  </span>
+                  <span className="text-[10px] md:text-xs text-gray-400 uppercase tracking-wider font-semibold border border-white/20 px-2 py-0.5 rounded">
+                    {item.media_type === "tv" ? "TV Series" : "Movie"}
+                  </span>
+                </div>
               </div>
             </div>
-          ))
-        ) : (
-          <Loader />
-        )}
-      </Slider>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
-
-const NextArrow = ({ onClick }) => (
-  <button
-    className="absolute top-1/2 right-3 transform -translate-y-1/2 bg-black opacity-70 transition-opacity hover:opacity-100 w-16 h-16 rounded-full text-white z-10 cursor-pointer"
-    style={{ right: "10px" }} // Adjust right position
-    onClick={onClick}
-  >
-    &#8250;
-  </button>
-);
-
-const PrevArrow = ({ onClick }) => (
-  <button
-    className="absolute top-1/2 left-3 transform -translate-y-1/2 bg-[#001f3f] opacity-70 transition-opacity hover:opacity-100 p-4 w-16 h-16 rounded-full text-white z-20 cursor-pointer"
-    style={{ left: "10px" }} // Adjust left position
-    onClick={onClick}
-  >
-    &#8249;
-  </button>
-);

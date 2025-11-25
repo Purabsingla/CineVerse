@@ -1,220 +1,187 @@
-import { useState } from "react";
-import { GiAlienEgg } from "react-icons/gi";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Search, Menu, X, Film } from "lucide-react";
+
+// --- Reusable NavBar Component ---
 const NavBar = ({ sectionRef, trendingRef, popularRef, genreRef }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
   const [search, setSearch] = useState("");
+  const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
 
-  const toggleMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
+  // Detect scroll to change navbar appearance
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-  const handleScrollToTrending = () => {
-    if (trendingRef) {
-      if (trendingRef.current) {
-        trendingRef.current.scrollIntoView({ behavior: "smooth" });
-      }
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
     } else {
-      navigate("/#trending-section");
+      document.body.style.overflow = "unset";
     }
-  };
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isMobileMenuOpen]);
 
-  const handleScrollTogenre = () => {
-    if (genreRef) {
-      if (genreRef.current) {
-        genreRef.current.scrollIntoView({ behavior: "smooth" });
-      }
+  const toggleMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
+
+  const handleNavigation = (ref, path) => {
+    if (ref && ref.current) {
+      const yOffset = -80;
+      const y =
+        ref.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: "smooth" });
     } else {
-      navigate("/#genre-section");
+      navigate(path);
     }
-  };
-
-  const handleScrollToHome = () => {
-    if (sectionRef) {
-      if (sectionRef.current) {
-        sectionRef.current.scrollIntoView({ behavior: "smooth" });
-      }
-    } else navigate("/");
-  };
-
-  const handleScrollToPopular = () => {
-    if (popularRef) {
-      if (popularRef.current) {
-        popularRef.current.scrollIntoView({ behavior: "smooth" });
-      }
-    } else navigate("/#popular-section");
-  };
-
-  const HandleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      handleSearch();
-      if (isMobileMenuOpen) {
-        setIsMobileMenuOpen(!isMobileMenuOpen);
-      }
-    }
+    setIsMobileMenuOpen(false);
   };
 
   const handleSearch = () => {
     if (search.trim()) {
-      const formattedSearch = search.toLowerCase().replace(/\s+/g, "-"); // Format for URL
+      const formattedSearch = search.toLowerCase().replace(/\s+/g, "-");
       navigate(`/search/${formattedSearch}`);
+      setIsMobileMenuOpen(false);
     }
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") handleSearch();
+  };
+
+  // Dynamic classes for cinematic effect
+  // If menu is open, we force transparent background so it blends with the full-screen overlay
+  const navBackground = isMobileMenuOpen
+    ? "bg-transparent border-none"
+    : isScrolled
+    ? "bg-black/30 backdrop-blur-xl  shadow-2xl"
+    : "bg-gradient-to-b from-black/80 to-transparent ";
+
   return (
-    <nav className="backdrop-blur-lg fixed top-0 z-20 start-0 w-full">
-      <div className="max-w-[1300px] flex flex-wrap items-center justify-between mx-auto p-4">
-        <p className="flex items-center space-x-3 rtl:space-x-reverse cursor-default">
-          <GiAlienEgg className="h-8 w-8 text-white" />
-          <span className="self-center text-2xl font-semibold whitespace-nowrap text-white">
-            CineVerse
-          </span>
-        </p>
+    <>
+      <nav
+        className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ease-in-out ${navBackground}`}
+      >
+        <div className="max-w-[1400px] mx-auto px-4 lg:px-6 py-4">
+          <div className="flex items-center justify-between">
+            {/* Logo Section */}
+            <div
+              onClick={() => handleNavigation(sectionRef, "/")}
+              className="flex items-center gap-2 lg:gap-3 cursor-pointer group relative z-50"
+            >
+              <div className="relative">
+                <div className="absolute inset-0 bg-cyan-500 blur-lg opacity-20 group-hover:opacity-50 transition-opacity duration-500"></div>
+                <Film className="h-6 w-6 lg:h-8 lg:w-8 text-cyan-400 relative z-10 transform group-hover:rotate-12 transition-transform duration-500" />
+              </div>
+              <span className="text-lg lg:text-2xl font-bold tracking-wider text-white uppercase font-sans truncate">
+                Cine
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">
+                  Verse
+                </span>
+              </span>
+            </div>
 
-        {/* Search Bar And Hamburger Button */}
-        <div className="md:order-2">
-          {/* Search Bar for Desktop */}
-          {/* Desktop Search Bar */}
-          <div className="relative hidden md:flex items-center gap-2">
-            <div className="relative flex-1">
-              <input
-                type="text"
-                id="search-desktop"
-                className="block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 placeholder-gray-500 transition-colors focus:ring-[#00FFFF] focus:border-[#00FFFF] focus:placeholder-[#00FFFF] focus:text-[#00FFFF] dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-[#00FFFF] dark:focus:border-[#00FFFF]"
-                placeholder="Search..."
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                }}
-                onKeyPress={HandleKeyPress}
-              />
-              <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                <svg
-                  className="w-4 h-4 text-gray-500 dark:text-gray-400 font-extrabold transition-colors group-hover:text-[#00FFFF] group-focus-within:text-[#00FFFF]"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 20 20"
-                  aria-hidden="true"
-                >
-                  <path
-                    stroke="currentColor"
-                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+            {/* Desktop Navigation & Search */}
+            <div className="hidden lg:flex items-center gap-8">
+              <ul className="flex gap-8 items-center">
+                {[
+                  { label: "Home", ref: sectionRef, path: "/" },
+                  { label: "Trending", ref: trendingRef, path: "/#trending" },
+                  { label: "Popular", ref: popularRef, path: "/#popular" },
+                  { label: "Genre", ref: genreRef, path: "/#genre" },
+                ].map((item) => (
+                  <li
+                    key={item.label}
+                    onClick={() => handleNavigation(item.ref, item.path)}
+                    className="text-xs font-bold tracking-[0.2em] text-gray-300 hover:text-cyan-400 uppercase cursor-pointer transition-all duration-300 hover:scale-105 relative group"
+                  >
+                    {item.label}
+                    <span className="absolute -bottom-2 left-0 w-0 h-[2px] bg-cyan-400 transition-all duration-300 group-hover:w-full shadow-[0_0_10px_#22d3ee]"></span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="relative group">
+                <div className="absolute inset-0 bg-cyan-500/20 blur-md rounded-full opacity-0 group-focus-within:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative flex items-center bg-white/5 border border-white/10 rounded-full px-4 py-2 transition-all duration-300 focus-within:border-cyan-400/50 focus-within:bg-black/60 w-64">
+                  <input
+                    type="text"
+                    className="bg-transparent border-none text-gray-200 text-sm placeholder-gray-500 focus:ring-0 w-full outline-none tracking-wide"
+                    placeholder="FIND MOVIES..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    onKeyPress={handleKeyPress}
                   />
-                </svg>
+                  <Search
+                    onClick={handleSearch}
+                    className="w-4 h-4 text-gray-400 hover:text-cyan-400 cursor-pointer transition-colors"
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Search Button - Positioned Next to Input */}
+            {/* Mobile Toggle */}
             <button
-              className="p-2 text-base font-medium bg-[#00FFFF] text-white rounded-lg transition-colors hover:bg-[#00BFFF]"
-              onClick={handleSearch}
+              onClick={toggleMenu}
+              className="lg:hidden text-white hover:text-cyan-400 transition-colors z-50 relative p-2"
+              aria-label="Toggle Menu"
             >
-              Search
+              {isMobileMenuOpen ? (
+                <X className="w-7 h-7" />
+              ) : (
+                <Menu className="w-7 h-7" />
+              )}
             </button>
           </div>
+        </div>
+      </nav>
 
-          {/* Hamburger Button for Mobile */}
-          <button
-            data-collapse-toggle="navbar-search"
-            type="button"
-            onClick={toggleMenu}
-            className="inline-flex items-center p-2 w-10 h-10 border justify-center text-sm text-gray-500 rounded-lg md:hidden  focus:outline-none focus:ring-2 transition-all hover:bg-[#00FFFF] hover:text-black focus:ring-gray-600"
-            aria-controls="navbar-search"
-            aria-expanded={isMobileMenuOpen ? "true" : "false"}
-          >
-            <span className="sr-only">Open main menu</span>
-            <svg
-              className="w-5 h-5"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 17 14"
-            >
-              <path stroke="currentColor" d="M1 1h15M1 7h15M1 13h15" />
-            </svg>
-          </button>
+      {/* Mobile Menu Overlay */}
+      <div
+        className={`fixed inset-0 bg-black/98 backdrop-blur-3xl z-40 transition-all duration-500 lg:hidden flex flex-col justify-center items-center gap-8 ${
+          isMobileMenuOpen
+            ? "opacity-100 pointer-events-auto visible"
+            : "opacity-0 pointer-events-none invisible"
+        }`}
+      >
+        {/* Mobile Search */}
+        <div className="w-full max-w-xs relative px-4">
+          <input
+            type="text"
+            className="w-full bg-white/5 border border-white/20 rounded-full px-6 py-4 text-white text-lg outline-none focus:border-cyan-400 transition-colors text-center tracking-widest placeholder-gray-600"
+            placeholder="SEARCH..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyPress={handleKeyPress}
+          />
         </div>
 
-        {/* Navbar Links and Search for Mobile */}
-        <div
-          className={`items-center justify-between ${
-            isMobileMenuOpen ? "block" : "hidden"
-          } w-full md:flex md:w-auto md:order-1`}
-          id="navbar-search"
-        >
-          {/* Search Bar for Mobile */}
-          <div className="relative md:hidden mt-12 mb-4 flex items-center gap-2 transition-colors">
-            {/* Search Input */}
-            <div className="relative flex-1">
-              <input
-                type="text"
-                id="search-mobile"
-                className="block w-full border rounded-md transition-colors hover:border hover:border-[#00FFFF] p-2 ps-10 text-sm border-gray-300 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Search..."
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                }}
-                onKeyPress={HandleKeyPress}
-              />
-              {/* Search Icon */}
-              <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                <svg
-                  className="w-4 h-4 text-gray-500 dark:text-gray-400"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    stroke="currentColor"
-                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                  />
-                </svg>
-              </div>
-            </div>
-
-            {/* Search Button */}
-            <button
-              className="p-2 text-base font-medium bg-[#00FFFF] text-white rounded-lg transition-colors hover:bg-[#00BFFF]"
-              onClick={handleSearch}
+        {/* Mobile Links */}
+        <ul className="flex flex-col items-center gap-6">
+          {[
+            { label: "Home", ref: sectionRef, path: "/" },
+            { label: "Trending", ref: trendingRef, path: "/#trending" },
+            { label: "Popular", ref: popularRef, path: "/#popular" },
+            { label: "Genre", ref: genreRef, path: "/#genre" },
+          ].map((item) => (
+            <li
+              key={item.label}
+              onClick={() => handleNavigation(item.ref, item.path)}
+              className="text-xl font-bold tracking-[0.3em] text-white hover:text-cyan-400 uppercase cursor-pointer transition-all duration-300 active:scale-95"
             >
-              Search
-            </button>
-          </div>
-
-          {/* Navbar Links */}
-          <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg backdrop-blur-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 cursor-pointer">
-            <li onClick={handleScrollToHome}>
-              <p
-                className="block py-2 px-3 hover:bg-gray-700 text-white rounded-sm md:bg-transparent md:p-0 transition-colors hover:text-[#00FFFF]"
-                aria-current="page"
-              >
-                Home
-              </p>
+              {item.label}
             </li>
-            <li onClick={handleScrollToTrending}>
-              <p
-                className="block py-2 px-3 hover:bg-gray-700 text-white rounded-sm md:bg-transparent md:p-0 transition-colors hover:text-[#00FFFF]"
-                aria-current="page"
-              >
-                Trending
-              </p>
-            </li>
-            <li onClick={handleScrollToPopular}>
-              <p className="block py-2 px-3 rounded-sm hover:bg-gray-700  md:hover:bg-transparent transition-colors hover:text-[#00FFFF] md:p-0 text-white">
-                Popular
-              </p>
-            </li>
-            <li onClick={handleScrollTogenre}>
-              <p className="block py-2 px-3  rounded-sm  md:hover:bg-transparent transition-colors hover:text-[#00FFFF] md:p-0 text-white hover:bg-gray-700">
-                Genre
-              </p>
-            </li>
-          </ul>
-        </div>
+          ))}
+        </ul>
       </div>
-    </nav>
+    </>
   );
 };
 

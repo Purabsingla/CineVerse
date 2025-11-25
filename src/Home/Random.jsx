@@ -1,15 +1,15 @@
-import wall1 from "../assests/wall1.jpg";
+import React, { useEffect, useRef, useState } from "react";
 import SearchResult from "../Searching/SearchResult";
 import Trending from "../Trending/Trending";
 import Popular from "../Popular/Popular";
 import NavBar from "./NavBar";
-import React, { useEffect, useRef, useState } from "react";
 import Footer from "../Footer/footer";
 import { useLocation } from "react-router-dom";
 import TrendingShows from "../Trending/TrendingShows";
 import PopularShows from "../Popular/PopularShows";
+import { Play, Star, Info, ChevronDown } from "lucide-react";
 
-export default function Random() {
+const Random = () => {
   const inputRef = useRef(null);
   const sectionRef = useRef(null); // Ref for the background section
   const trendingRef = useRef(null); // Ref for Trending
@@ -117,40 +117,67 @@ export default function Random() {
       />
 
       <div
-        className="relative h-screen bg-cover bg-center"
-        style={{ backgroundImage: `url(${wall1})` }}
         ref={sectionRef}
+        className="relative h-screen w-full overflow-hidden bg-black"
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70"></div>
+        {/* 1. High-Res Cinematic Background (Dark Movie Theater) */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `url('https://images.unsplash.com/photo-1460881680858-30d872d5b530?q=80&w=2071&auto=format&fit=crop')`,
+          }}
+        >
+          {/* Dark overlay to ensure text readability */}
+          <div className="absolute inset-0 bg-black/60" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-black/30" />
+        </div>
 
-        <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-6 sm:px-8">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-4 drop-shadow-lg">
-            Discover Movies & TV Shows
+        {/* 2. Main Content - Centered & Clean */}
+        <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4 sm:px-6 lg:px-8 pt-20">
+          {/* Small Label */}
+          <span className="mb-4 px-3 py-1 rounded-full border border-white/10 bg-white/5 backdrop-blur-md text-xs font-medium tracking-[0.3em] text-red-500 uppercase">
+            Streaming Now
+          </span>
+
+          {/* Hero Title */}
+          <h1 className="text-5xl sm:text-7xl md:text-8xl font-bold tracking-tighter text-white mb-6 drop-shadow-2xl leading-tight">
+            Unlimited <span className="text-red-600">Cinema.</span> <br />
+            Anytime.
           </h1>
 
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 max-w-xl sm:max-w-2xl text-gray-300">
-            Explore trending films, search by title, genre, and enjoy the world
-            of entertainment.
+          {/* Subtext */}
+          <p className="text-lg sm:text-xl text-gray-300 mb-10 max-w-2xl leading-relaxed font-light">
+            Your gateway to the world's biggest movies and TV shows.{" "}
+            <br className="hidden sm:block" />
+            Start exploring the universe of entertainment today.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 sm:gap-12 md:gap-28">
-            <p
-              className="btn-glitch-fill px-4 py-2"
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+            <button
               onClick={handleScrollToTrending}
+              className="w-full sm:w-auto px-8 py-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-all transform hover:scale-105 flex items-center justify-center gap-2 shadow-lg shadow-red-900/20"
             >
-              <span className="text">~~ Browse Trending</span>
-              <span className="text-decoration"> _</span>
-              <span className="decoration">⇒</span>
-            </p>
-            <p
-              className="btn-glitch-fill px-4 py-2"
+              <Play size={20} fill="currentColor" />
+              Start Watching
+            </button>
+
+            <button
               onClick={handleScrollToPopular}
+              className="w-full sm:w-auto px-8 py-4 bg-white/10 hover:bg-white/20 border border-white/10 backdrop-blur-md text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
             >
-              <span className="text">~~ Browse Popular</span>
-              <span className="text-decoration"> _</span>
-              <span className="decoration">⇒</span>
-            </p>
+              <Info size={20} />
+              More Info
+            </button>
           </div>
+        </div>
+
+        {/* Bottom Fade for smooth transition */}
+        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black to-transparent z-10"></div>
+
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/50 animate-bounce z-20">
+          <ChevronDown size={32} />
         </div>
       </div>
 
@@ -169,4 +196,6 @@ export default function Random() {
       <Footer />
     </div>
   );
-}
+};
+
+export default Random;
